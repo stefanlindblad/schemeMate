@@ -1,6 +1,6 @@
 #include "schemeMate_main.h"
 
-static void initializeSystem() {
+static void init_system() {
     INPUT = new_fileStream(stdin);
     SM_NIL = new_nil();
     SM_TRUE = new_true();
