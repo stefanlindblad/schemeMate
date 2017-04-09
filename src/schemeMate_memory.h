@@ -1,11 +1,13 @@
-#pragma once
-#include <stdlib.h>
+#ifndef MEMORY_HEADER
+#define MEMORY_HEADER
+
 #include "schemeMate_objects.h"
 
-SCM_OBJ new_integer(int iVal);
-SCM_OBJ new_EOF();
-SCM_OBJ new_cons(SCM_OBJ car, SCM_OBJ cdr);
-SCM_OBJ new_nil();
+sm_obj new_integer(int value);
+sm_obj new_EOF();
+sm_obj new_cons(sm_obj car, sm_obj cdr);
+sm_obj new_nil();
 
-void init_system();
-void deinit_system();
+void init_memory();
+
+#endif // MEMORY_HEADER

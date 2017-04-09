@@ -29,6 +29,7 @@ static void repl()
 int main(int argc, char *argv[])
 {
 	init_system();
+	init_memory();
 	printf("Welcome to schemeMate [0.1 ]\n");
 	selftest();
 	repl();

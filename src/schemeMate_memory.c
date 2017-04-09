@@ -1,84 +1,38 @@
 #include "schemeMate_memory.h"
 
-static SCM_OBJ eof_singleton;
-static SCM_OBJ *symbolTable = NULL;
+static sm_obj eof_singleton;
+static sm_obj *symbolTable = NULL;
 static int numKnownSymbols = 0;
 static int symbolTableSize = 0;
 
-void init_system()
+void init_memory()
 {
-	symbolTable = (SCM_OBJ*)malloc(sizeof(SCM_OBJ) * INTIAL_SYMBOLTABLE_SIZE);
+	symbolTable = (sm_obj*)malloc(sizeof(sm_obj) * INTIAL_SYMBOLTABLE_SIZE);
 	symbolTableSize = INTIAL_SYMBOLTABLE_SIZE;
 }
 
-void deinit_system()
-{
-	// TODO: dealloc symbol table
-}
+// utility functions to create the object types
 
-SCM_OBJ new_integer(int iVal)
+sm_obj new_int(int value)
 {
-	SCM_OBJ o = (SCM_OBJ)malloc(sizeof(struct scm_integer));
-	o->scm_integer.tag = TAG_INT;
-	o->scm_integer.iVal = iVal;
+	sm_obj o = (sm_obj) malloc(sizeof(struct sm_int));
+	o->sm_int.tag = TAG_INT;
+	o->sm_int.iVal = value;
 	return o;
 }
 
-static SCM_OBJ get_symbol_or_null(char* chars)
+sm_obj new_symbol(char* chars)
 {
-	int i;
-	for (i = 0; i < numKnownSymbols; i++)
-	{
-		SCM_OBJ currentObject = symbolTable[i];
-		if (strcmp(currentObject->scm_symbol.chars, chars) == 0)
-			return currentObject;
-	}
-	return NULL;
+	sm_obj object = really_new_symbol(chars);
+	
+	return object;
 }
 
-static void remember_symbol(SCM_OBJ obj)
-{
-	if (numKnownSymbols == numKnownSymbols) {
-		int newSize = symbolTableSize * 2;
-		symbolTable = (SCM_OBJ*)realloc(symbolTable, sizeof(SCM_OBJ) * newSize);
-		symbolTableSize = newSize;
-	}
-	symbolTable[numKnownSymbols++] = obj;
-}
-
-SCM_OBJ really_new_symbol(char* chars)
-{
-	SCM_OBJ existingSymbol = get_symbol_or_null(chars);
-	if (existingSymbol == NULL)
-	{
-		SCM_OBJ o = (SCM_OBJ)malloc(sizeof(struct scm_symbol) - 1 /* eins zuviel */ + strlen(chars) + 1 /* nullbyte */);
-		remember_symbol(o);
-		return o;
-	}
-	// strcopy usw
-	//	o->scm_integer.iVal = iVal;
-	return existingSymbol;
-}
-
-SCM_OBJ new_symbol(char* chars)
-{
-	really_new_symbol(chars);
-	SCM_OBJ o = (SCM_OBJ)malloc(sizeof(struct scm_symbol) - 1 /* eins zuviel */ + strlen(chars) + 1 /* nullbyte */);
-	o->scm_integer.tag = TAG_SYMBOL;
-
-
-	// strcopy usw
-//	o->scm_integer.iVal = iVal;
-	return o;
-}
-
-
-
-SCM_OBJ new_EOF()
+sm_obj new_eof()
 {
 	if (eof_singleton == NULL)
 	{
-		SCM_OBJ o = (SCM_OBJ)malloc(sizeof(struct scm_integer));
+		sm_obj o = (sm_obj)malloc(sizeof(struct scm_integer));
 		o->scm_integer.tag = TAG_EOF;
 		eof_singleton = o;
 	}
@@ -87,32 +41,74 @@ SCM_OBJ new_EOF()
 
 // singleton structure für die verschiedenen special typen mit array für alle singletons
 
-SCM_OBJ new_nil()
+sm_obj new_nil()
 {
-	SCM_OBJ o = (SCM_OBJ)malloc(sizeof(struct scm_integer));
-	o->scm_integer.tag = TAG_NIL;
+	sm_obj o = create_singleton(TAG_NIL);
 	return o;
 }
 
-SCM_OBJ new_false()
+sm_obj new_false()
 {
-	SCM_OBJ o = (SCM_OBJ)malloc(sizeof(struct scm_integer));
-	o->scm_integer.tag = TAG_FALSE;
-	return o;
+	sm_obj o = create_singleton(TAG_FALSE);
 }
 
-SCM_OBJ new_cons(SCM_OBJ car, SCM_OBJ cdr)
+sm_obj new_true()
 {
-	SCM_OBJ o = (SCM_OBJ)malloc(sizeof(struct scm_cons));
+	sm_obj o = create_singleton(TAG_TRUE);
+}
+
+sm_obj new_cons(sm_obj car, sm_obj cdr)
+{
+	sm_obj o = (sm_obj)malloc(sizeof(struct scm_cons));
 	o->scm_cons.tag = TAG_CONS;
 	o->scm_cons.car = car;
 	o->scm_cons.cdr = cdr;
 	return o;
 }
 
-SCM_OBJ new_true()
-{
-	SCM_OBJ o = (SCM_OBJ)malloc(sizeof(struct scm_integer));
-	o->scm_integer.tag = TAG_TRUE;
-	return o;
+static sm_obj create_singleton(sm_tag tag) {
+	static sm_obj singleton[TAG_MAX];
+	if (singleton[tag] == NULL) {
+		sm_obj o = (sm_obj) malloc(sizeof(struct sm_special));
+		o->sm_int.tag = tag;
+		singleton[tag] = o;
+	}
+	return singleton[tag];
 }
+
+static sm_obj get_symbol_or_null(char* chars)
+{
+	int i;
+	for (i = 0; i < numKnownSymbols; i++)
+	{
+		sm_obj currentObject = symbolTable[i];
+		if (strcmp(currentObject->scm_symbol.chars, chars) == 0)
+			return currentObject;
+	}
+	return NULL;
+}
+
+static void remember_symbol(sm_obj obj)
+{
+	if (numKnownSymbols == numKnownSymbols) {
+		int newSize = symbolTableSize * 2;
+		symbolTable = (sm_obj*)realloc(symbolTable, sizeof(sm_obj) * newSize);
+		symbolTableSize = newSize;
+	}
+	symbolTable[numKnownSymbols++] = obj;
+}
+
+sm_obj really_new_symbol(char* chars)
+{
+	sm_obj existingSymbol = get_symbol_or_null(chars);
+	if (existingSymbol == NULL)
+	{
+		sm_obj o = (sm_obj)malloc(sizeof(struct scm_symbol) - 1 /* eins zuviel */ + strlen(chars) + 1 /* nullbyte */);
+		remember_symbol(o);
+		return o;
+	}
+	// strcopy usw
+	//	o->scm_integer.iVal = iVal;
+	return existingSymbol;
+}
+
