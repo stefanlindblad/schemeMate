@@ -1,60 +1,132 @@
 #include "schemeMate_reader.h"
 
-sm_obj sm_read(sm_stream input)
+static void alloc_buffer(buffer *b, int initSize)
 {
-	buffer b;
-	sm_char nextChar;
-	allocBuffer(&b, INIT_BUFFER_SIZE);
-	nextChar = skipSeparators(input);
-	if (nextChar == EOF_CHAR)
-	{
-		return new_eof();
-	}
-	
-	
-	for (;;) {
-		if (isSeparator(nextChar) || nextChar == '(' || nextChar == ')') {
-			break;
-		}
-		putBuffer(&b, nextChar);
-		nextChar = readCharacter(input);
-	}
-	unreadCharacter(input);
-	//if (allDigits(b.memory))
-	//{
-	//	a2i(b.memory)
-	//}
-
-	//if(inputToken[0] == '#')
-	//{
-	//	if (strcmp(inputToken, "#t") == 0)
-	//	{
-	//		return new_true();
-	//	}
-	//	if (strcmp(inputToken, "#f") == 0)
-	//	{
-	//		return new_false();
-	//	}
-	//}
-
-	return new_integer(123);
+    b->memory = malloc(initSize);
+    b->size = initSize;
+    b->filled = 0;
 }
 
+static void grow_buffer(buffer *b)
+{
+    int newSize = b->size * 2;
+    b->memory = realloc(b->memory, newSize);
+    b->size = newSize;
+}
 
-long a2l (char* cp)
+static void put_buffer(buffer *b, sm_char ch)
+{
+    if ((b->filled+1) == b->size) {
+		growBuffer(b);
+    }
+    b->memory[b->filled++] = (char) ch;
+    b->memory[b->filled] = '\0';
+}
+
+long a2l(char* cp)
 { 
 	long val = 0;
 	char c;
-	while (( c = *cp++) != '\0')
+	while ((c = *cp++) != '\0')
 		val = val * 10 + (c - '\0');
+	return val;
 }
 
-sm_obj scm_readString(char * input)
+static sm_char skipSeparators(sm_stream inStream)
 {
-	return scm_read( new_stringStream(input) );
+	sm_char nextChar;
+	do {
+		nextChar = readCharacter(inStream);
+		if (nextChar == EOF_CHAR)
+			return EOF_CHAR;
+	} while (isSeparator(nextChar));
+	return nextChar;
 }
 
-static sm_obj scm_readList(SCM_STREAM inStream)
+static sm_bool isSeparator(sm_char c)
+{
+	switch (c)
+	{
+		case ' ':
+		case '\t':
+		case '\r':
+		case '\n':
+			return 1;
+		default:
+			return 0;
+	}
+}
+
+static sm_bool allDigits(char* cp)
+{
+	char c;
+
+	if((*cp) == '\0')
+		return 0;
+
+	while ((c = (*cp)++) != '\0') {
+		if ((c < '0') || (c > '9'))
+			return 0;
+	}
+    return 1;
+}
+
+static sm_char readCharacter(sm_stream inStream)
+{
+	switch (inStream->type)
+	{
+		case STRING_STREAM:
+		{
+			int i = inStream->index;
+			sm_char nextChar = inStream->theString[i++];
+			if (nextChar == '\0') {
+				return EOF_CHAR;
+			}
+			inStream->index = i;
+			return nextChar;
+		}
+		case FILE_STREAM:
+		{
+			sm_char nextChar;
+			if (inStream->peek != 0) {
+		    	nextChar = inStream->peek;
+		    	inStream->peek = 0;
+		    	return nextChar;
+			}
+			nextChar = fgetc(inStream->fileStream);
+			if (nextChar < 0)
+				return EOF_CHAR;
+			return nextChar;
+		}
+		default:
+			ERROR("UNKOWN STREAM TYPE!");
+
+		// Should not end here, pure compiler satisfaction
+		return 0;
+	}
+}
+
+static void unreadCharacter(sm_stream inStream, sm_char char_to_unread)
+{
+	switch (inStream->type)
+	{
+		case STRING_STREAM:
+		{
+			inStream->index--;
+			return;
+		}
+		case FILE_STREAM:
+		{
+			ASSERT(inStream->peek == 0, "CANNOT UNREAD FIRST CHARACTER");
+			inStream->peek = char_to_unread;
+			return;
+		}
+	default:
+		ERROR("UNKOWN STREAM TYPE!");
+	}
+}
+
+static sm_obj sm_readList(sm_stream inStream)
 {
 	sm_char nextChar;
 	sm_obj car;
@@ -64,97 +136,105 @@ static sm_obj scm_readList(SCM_STREAM inStream)
 	{
 		return new_nil();
 	}
-	unreadCharacter(inStream);
-	car = scm_read(inStream);
-	cdr = scm_readList(inStream);
+	unreadCharacter(inStream, nextChar);
+	car = sm_read(inStream);
+	cdr = sm_readList(inStream);
 	return new_cons(car, cdr);
-
-	//FATAL("unimplemented");
 }
 
-
-
-static int skipSeparators(SCM_STREAM inStream)
+sm_obj sm_readString(sm_stream inStream)
 {
-	sm_char nextChar;
+	buffer b;
+    sm_char nextChar;
+    char *string;
 
-	do {
+    alloc_buffer(&b, INIT_BUFFER_SIZE);
+    for (;;) {
 		nextChar = readCharacter(inStream);
-		if (nextChar == EOF_CHAR) return EOF_CHAR;
-	} while (isSeparator(nextChar));
-	return nextChar;
-}
 
-static BOOL isSeparator(int aChar)
-{
-	switch (aChar)
-	{
-	case ' ':
-	case '\t':
-	case '\r':
-	case '\n':
-		return 1;
-	default:
-		return 0;
-	}
-}
-
-static int readCharacter(SCM_STREAM inStream)
-{
-	switch (inStream->type)
-	{
-	case STRING_STREAM:
-	{
-		int i = inStream->index;
-		sm_char nextChar = inStream->theString[i++];
-		if (nextChar == '\0') {
-			return EOF_CHAR;
+		if (nextChar == EOF_CHAR) {
+	    	fprintf(stderr, "unterminated string");
+	    	return new_eof();
 		}
-		inStream->index = i;
-		return nextChar;
-	}
-	case FILE_STREAM:
-	{
-		sm_char nextChar = fgetc(inStream->fileStream);
-		if (inStream->peekChar != 0)
-		{
-			
+		if (nextChar == '"') {
+	    	string = b.memory;
+	    	return new_string(string);
 		}
-		if (nextChar < 0)
-			return EOF_CHAR;
-		return nextChar;
-	}
-	default:
-		ASSERT(0 == 0, "UNKOWN STREAM TYPE!");
-		return 0;
-	}
-}
-
-static void unreadCharacter(SCM_STREAM inStream, sm_char char_to_unread)
-{
-	switch (inStream->type)
-	{
-	case STRING_STREAM:
-	{
-		inStream->index--;
-		return;
-	}
-	case FILE_STREAM:
-		ASSERT(inStream->peekChar == 0, "CANNOT UNREAD FIRST CHARACTER");
-		{
-		inStream->peekChar = char_to_unread;
-		return;
-
+		if (nextChar == '\\') {
+	    	sm_char escapedChar;
+	    	escapedChar = readCharacter(inStream);
+	    	switch (escapedChar)
+	    	{
+				case 'n':
+		    		nextChar = '\n';
+		    		break;
+				default:
+		    		break;
+	    	}
 		}
-	default:
-		ASSERT(0 == 0, "UNKOWN STREAM TYPE!");
-	}
+		put_buffer(&b, nextChar);
+    }
 }
 
- 
-SCM_STREAM new_filestream(FILE* inFile)
+sm_obj sm_read(sm_stream inStream)
 {
-	scm_stream s = (scm_stream) malloc(sizeof(struct scm_stream_struct));
+	buffer b;
+    sm_char nextChar;
+    char *input;
 
+    alloc_buffer(&b, INIT_BUFFER_SIZE);
+    nextChar = skipSeparators(inStream);
+    if (nextChar == EOF_CHAR) {
+		return new_eof();
+    }
+    if (nextChar == '(') {
+		return sm_readList(inStream);
+    }
+    if (nextChar == '"') {
+		return sm_readString(inStream);
+    }
+    if (nextChar == '\'') {
+		sm_obj quotedExpr;
+		quotedExpr = sm_read(inStream);
+		return new_cons(new_symbol("quote"), new_cons(quotedExpr, new_nil()));
+    }
+
+    for (;;) {
+		if (nextChar == EOF_CHAR)
+	    	break;
+		if (isSeparator(nextChar) || (nextChar == '(') || (nextChar == ')')) {
+	    	break;
+		}
+		put_buffer(&b, nextChar);
+		nextChar = readCharacter(inStream);
+    }
+    unreadCharacter(inStream, nextChar);
+
+    if (allDigits(b.memory)) {
+		long iVal = a2l(b.memory);
+		return new_int(iVal);
+    }
+    input = b.memory;
+
+    if (input[0] == '-') {
+		if (allDigits(input+1)) {
+	    	long iVal = a2l(input+1);
+	    	return new_int(-iVal);
+		}
+    }
+
+    if (input[0] == '#') {
+		if (strcmp(input, "#t") == 0)
+	    	return new_true();
+		if (strcmp(input, "#f") == 0)
+	    	return new_false();
+		if (strcmp(input, "#void") == 0)
+	    	return new_void();
+    }
+
+    if (strcmp(input, "nil") == 0) {
+		return new_nil();
+    }
+
+    return new_symbol(input);
 }
-

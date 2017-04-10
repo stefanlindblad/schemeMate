@@ -57,7 +57,8 @@ sm_obj new_true()
 	return o;
 }
 
-sm_obj new_user_func(sm_obj args, sm_obj body) {
+sm_obj new_user_func(sm_obj args, sm_obj body)
+{
     sm_obj o = (sm_obj) malloc(sizeof(struct sm_user_func_type));
     o->sm_user_func.tag = TAG_USER_FUNC;
     o->sm_user_func.args = args;
@@ -65,7 +66,8 @@ sm_obj new_user_func(sm_obj args, sm_obj body) {
     return o;
 }
 
-sm_obj new_sys_func(sm_func funcPtr) {
+sm_obj new_sys_func(sm_func funcPtr)
+{
     sm_obj o = (sm_obj) malloc(sizeof(struct sm_sys_func_type));
 
     o->sm_sys_func.tag = TAG_SYS_FUNC;
@@ -73,7 +75,8 @@ sm_obj new_sys_func(sm_func funcPtr) {
     return o;
 }
 
-sm_obj new_sys_syntax(sm_func syntaxPtr) {
+sm_obj new_sys_syntax(sm_func syntaxPtr)
+{
     sm_obj o = (sm_obj) malloc(sizeof(struct sm_sys_syntax_type));
 
     o->sm_sys_syntax.tag = TAG_SYS_SYNTAX;
@@ -112,7 +115,8 @@ sm_stream new_file_stream(FILE* inFile) {
     return s;
 }
 
-static sm_obj create_singleton(sm_tag tag) {
+static sm_obj create_singleton(sm_tag tag)
+{
 	static sm_obj singleton[TAG_MAX];
 	if (singleton[tag] == NULL) {
 		sm_obj o = (sm_obj) malloc(sizeof(struct sm_special_type));
@@ -181,7 +185,8 @@ static void remember_symbol(sm_obj obj)
 	symbolTable[numKnownSymbols++] = obj;
 }
 
-static void grow_symbol_table() {
+static void grow_symbol_table()
+{
     int newSize = (symbolTableSize * 2) + 1;
     sm_obj *newTable = (sm_obj *)malloc(sizeof(sm_obj) * newSize);
     int i;
@@ -212,7 +217,8 @@ static void grow_symbol_table() {
 }
 
 // Grow the table when its more then 75% full
-static void check_table_size() {
+static void check_table_size()
+{
     if (numKnownSymbols > (symbolTableSize * 3 / 4)) {
 		grow_symbol_table();
     }
