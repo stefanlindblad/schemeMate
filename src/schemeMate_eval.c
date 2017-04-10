@@ -1,7 +1,7 @@
 #include "schemeMate_eval.h"
 
-static SCM_OBJ eof_singleton;
-static SCM_OBJ *symbolTable = NULL;
+static sm_obj eof_singleton;
+static sm_obj *symbolTable = NULL;
 static int numKnownSymbols = 0;
 static int symbolTableSize = 0;
 
@@ -12,13 +12,13 @@ static struct environment* allocateEnvironment(int size) {
 
 }
 
-static SCM_OBJ evalPlus(SCM_OBJ args) {
+static sm_obj evalPlus(sm_obj args) {
 	int sum = 0;
-	SCM_OBJ nextCell = args;
+	sm_obj nextCell = args;
  
 	while(nextCell != new_nil()) {
-		SCM_OBJ nextArg = car(nextCell);
-		SCM_OBJ valueOfNext;
+		sm_obj nextArg = car(nextCell);
+		sm_obj valueOfNext;
 
 		valueOfNext = scm_eval(nextCell);
 		breakpoint();
@@ -28,15 +28,15 @@ static SCM_OBJ evalPlus(SCM_OBJ args) {
 	breakpoint();
 }
 
-static SCM_OBJ evalMinus(SCM_OBJ args) {
+static sm_obj evalMinus(sm_obj args) {
 	breakpoint();
 }
 
 
-SCM_OBJ evalList(SCM_OBJ expr) {
+sm_obj evalList(sm_obj expr) {
 
-	SCM_OBJ func = CAR(expr);
-	SCM_OBJ args = CDR(expr);
+	sm_obj func = CAR(expr);
+	sm_obj args = CDR(expr);
 
 	if (func == new_symbol("+")) {
 		return evalPlus(args);
@@ -45,8 +45,6 @@ SCM_OBJ evalList(SCM_OBJ expr) {
 		return evalMinus(args);
 	}
 
-
-
-	report_error("Is not implemented yet");
+	ERROR("Is not implemented yet");
 }
 
