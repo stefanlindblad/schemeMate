@@ -19,6 +19,7 @@ sm_obj new_nil();
 sm_obj new_false();
 sm_obj new_true();
 sm_obj really_new_symbol(char* chars);
+sm_stream new_file_stream(FILE* inFile);
 static sm_stream new_string_stream(char* string);
 static sm_obj create_singleton(sm_tag tag);
 static sm_obj get_symbol_or_null(char* chars);

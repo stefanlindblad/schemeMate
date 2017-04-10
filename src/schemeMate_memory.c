@@ -104,6 +104,14 @@ static sm_stream new_string_stream(char* inString)
 	return s;
 }
 
+sm_stream new_file_stream(FILE* inFile) {
+    sm_stream s = (sm_stream) malloc(sizeof(struct sm_stream_type));
+    s->type = FILE_STREAM;
+    s->fileStream = inFile;
+    s->peek = 0;
+    return s;
+}
+
 static sm_obj create_singleton(sm_tag tag) {
 	static sm_obj singleton[TAG_MAX];
 	if (singleton[tag] == NULL) {

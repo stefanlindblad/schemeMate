@@ -1,14 +1,14 @@
 #include "schemeMate_reader.h"
 
-SCM_OBJ scm_read(SCM_STREAM input)
+sm_obj sm_read(sm_stream input)
 {
 	buffer b;
-	SCM_CHAR nextChar;
-	allocBuffer(&b, _INIT_BUFFER_SIZE);
+	sm_char nextChar;
+	allocBuffer(&b, INIT_BUFFER_SIZE);
 	nextChar = skipSeparators(input);
 	if (nextChar == EOF_CHAR)
 	{
-		return new_EOF();
+		return new_eof();
 	}
 	
 	
@@ -49,16 +49,16 @@ long a2l (char* cp)
 		val = val * 10 + (c - '\0');
 }
 
-SCM_OBJ scm_readString(char * input)
+sm_obj scm_readString(char * input)
 {
 	return scm_read( new_stringStream(input) );
 }
 
-static SCM_OBJ scm_readList(SCM_STREAM inStream)
+static sm_obj scm_readList(SCM_STREAM inStream)
 {
-	SCM_CHAR nextChar;
-	SCM_OBJ car;
-	SCM_OBJ cdr;
+	sm_char nextChar;
+	sm_obj car;
+	sm_obj cdr;
 	nextChar = skipSeparators(inStream);
 	if (nextChar == ')')
 	{
@@ -76,7 +76,7 @@ static SCM_OBJ scm_readList(SCM_STREAM inStream)
 
 static int skipSeparators(SCM_STREAM inStream)
 {
-	SCM_CHAR nextChar;
+	sm_char nextChar;
 
 	do {
 		nextChar = readCharacter(inStream);
@@ -106,7 +106,7 @@ static int readCharacter(SCM_STREAM inStream)
 	case STRING_STREAM:
 	{
 		int i = inStream->index;
-		SCM_CHAR nextChar = inStream->theString[i++];
+		sm_char nextChar = inStream->theString[i++];
 		if (nextChar == '\0') {
 			return EOF_CHAR;
 		}
@@ -115,7 +115,7 @@ static int readCharacter(SCM_STREAM inStream)
 	}
 	case FILE_STREAM:
 	{
-		SCM_CHAR nextChar = fgetc(inStream->fileStream);
+		sm_char nextChar = fgetc(inStream->fileStream);
 		if (inStream->peekChar != 0)
 		{
 			
@@ -130,7 +130,7 @@ static int readCharacter(SCM_STREAM inStream)
 	}
 }
 
-static void unreadCharacter(SCM_STREAM inStream, SCM_CHAR char_to_unread)
+static void unreadCharacter(SCM_STREAM inStream, sm_char char_to_unread)
 {
 	switch (inStream->type)
 	{

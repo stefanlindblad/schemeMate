@@ -16,7 +16,6 @@ typedef sm_obj (*sm_func)();
 // typedef int (*INTFUNC)();
 // typedef void (*VOIDFUNC)();
 // typedef void* (*VOIDPTRFUNC)();
-// #define EOF_CHAR  ((SCM_CHAR)-1)
 
 #define _INIT_BUFFER_SIZE 32
 #define INTIAL_SYMBOLTABLE_SIZE 100
@@ -119,6 +118,7 @@ struct sm_stream_type
 	FILE* fileStream;
 	char* theString;
 	int index;
+	int peek;
 };
 
 typedef struct sm_stream_type* sm_stream;
