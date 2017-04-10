@@ -148,6 +148,12 @@ static inline sm_bool is_float(sm_obj obj) {
     return has_tag(obj, TAG_FLOAT);
 }
 
+static inline double to_float(sm_obj obj)
+{
+	ASSERT(is_float(obj), "to_float() function expects a float object.");
+	return obj->sm_float.fVal;
+}
+
 static inline sm_bool is_nil(sm_obj obj) {
     return has_tag(obj, TAG_NIL);
 }

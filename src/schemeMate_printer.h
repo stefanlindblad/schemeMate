@@ -1,10 +1,12 @@
-#pragma once
+#ifndef PRINTER_HEADER
+#define PRINTER_HEADER
+
 #include "schemeMate_objects.h"
 #include "schemeMate_memory.h"
 
-SCM_OBJ scm_read(SCM_STREAM input);
-SCM_OBJ scm_readString(char * input);
-static int skipSeparators(SCM_STREAM inStream);
-static int readCharacter(SCM_STREAM inStream);
-static void unreadCharacter(SCM_STREAM inStream);
-static BOOL isSeparator(int aChar);
+void sm_print(FILE* file, sm_obj o);
+void sm_printList(FILE* file, sm_obj obj);
+void sm_printRest(FILE* outFile, sm_obj cons);
+void error(char *file, int line, char *message);
+
+#endif // PRINTER_HEADER

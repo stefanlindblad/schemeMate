@@ -1,65 +1,86 @@
 #include "schemeMate_printer.h"
 
-void scm_print(FILE* file, SCM_OBJ o)
+void sm_print(FILE* file, sm_obj o)
 {
-	switch (tagOf(o))
+	switch (get_tag(o))
 	{
 	case TAG_INT:
-		fprintf(stdout, "%ld", intValue(o));
+		fprintf(file, "%ld", intValue(o));
 		break;
 	case TAG_FLOAT:
-		fprintf(stdout, "%lf", floatValue(o));
+		fprintf(file, "%lf", floatValue(o));
 		break;
 	case TAG_NIL:
-		fprintf(stdout, "()");
+		fprintf(file, "()");
 		break;
 	case TAG_FALSE:
-		fprintf(stdout, "#f");
+		fprintf(file, "#f");
 		break;
 	case TAG_TRUE:
-		fprintf(stdout, "#t");
+		fprintf(file, "#t");
 		break;
 	case TAG_SYMBOL:
-		fprintf(stdout, "%s", symbolValue(o));
+		fprintf(file, "%s", symbolValue(o));
 		break;
 	case TAG_STRING:
-		fprintf(stdout, "<STRING>");
+		fprintf(file, "%s", stringValue(o));
 		break;
 	case TAG_CONS:
-		scm_printList(file, o);
+		sm_printList(file, o);
 		break;
 	case TAG_EOF:
-		fprintf(stdout, "#eof");
+		fprintf(file, "#eof");
 		break;
 	case TAG_OBJ:
-		fprintf(stdout, "%f", floatValue(o));
+		fprintf(file, "%f", floatValue(o));
 		break;
+	case TAG_VOID:
+		fprintf(file, "#void");
+		break;
+	case TAG_SYS_FUNC:
+		fprintf(file, "<BUILTIN FUNC>");
+		break;
+	case TAG_SYS_SYNTAX:
+	    fprintf(file, "<BUILTIN SYNTAX>");
+	    break;
+	case TAG_USER_FUNC:
+		fprintf(file, "(lambda ");
+	    sm_print(file, o->sm_user_func.args);
+	    fprintf(file, " ");
+	    sm_printRest(file, o->sm_user_func.body);
+		break;
+
 	default:
-		fprintf(stdout, "<UNKNOWN CHARACTER>");
+		fprintf(file, "<UNKNOWN CHARACTER>");
 		break;
 	}
 }
 
-void print(sizeof(SCM_OBJ));
-
-void scm_printList(SCM_OBJ obj)
+void sm_printList(FILE* file, sm_obj obj)
 {
-	fprintf(stdout, "(");
-	scm_print(car(obj));
-	if (isNil(cdr(obj)))
-		fprintf(stdout, ")");
-	else
-		scm_printList
+	fprintf(file, "(");
+	sm_printRest(file, obj);
 }
 
-void error(char *file, int line, char *message) {
+void sm_printRest(FILE* file, sm_obj cons)
+{
+    sm_print(file, car(cons));
+    if (is_nil(cdr(cons))) {
+		fprintf(file, ")");
+		return;
+    }
+    if (!is_cons(cdr(cons))) {
+		fprintf(file, " . ");
+		sm_print(file, cdr(cons));
+		fprintf(file, ")");
+		return;
+    }
+    fprintf(file, " ");
+    sm_printRest(file, cdr(cons));
+}
+
+void error(char *file, int line, char *message)
+{
     fprintf(stderr, "%s[%d]: %s\n", file, line, message);
     abort();
-}
-
-static inline double
-floatValue(SCM_OBJ obj)
-{
-	ASSERT(isFloat(obj), "IS NOT A FLOAT VALUE")
-	return (obj->scm_float.fVal);
 }
