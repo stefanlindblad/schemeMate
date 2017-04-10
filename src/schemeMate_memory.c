@@ -33,6 +33,17 @@ sm_obj new_cons(sm_obj car, sm_obj cdr)
 	return o;
 }
 
+sm_obj new_string(char* chars) {
+    unsigned int length = (unsigned int) strlen(chars);
+	unsigned int bytes = (unsigned int) sizeof(struct sm_string_type)
+		- 1 /* eins zuviel */ + length + 1 /* nullbyte */;
+	sm_obj o = (sm_obj) malloc(bytes);
+	o->sm_string.tag = TAG_STRING;
+	strcpy(o->sm_string.string, chars);
+	o->sm_string.string[length] = '\0';
+	return o;
+}
+
 sm_obj new_eof()
 {
 	sm_obj o = create_singleton(TAG_EOF);
@@ -57,6 +68,12 @@ sm_obj new_true()
 	return o;
 }
 
+sm_obj new_void()
+{
+	sm_obj o = create_singleton(TAG_VOID);
+	return o;
+}
+
 sm_obj new_user_func(sm_obj args, sm_obj body)
 {
     sm_obj o = (sm_obj) malloc(sizeof(struct sm_user_func_type));
@@ -68,20 +85,20 @@ sm_obj new_user_func(sm_obj args, sm_obj body)
 
 sm_obj new_sys_func(sm_func funcPtr)
 {
-    sm_obj o = (sm_obj) malloc(sizeof(struct sm_sys_func_type));
+	sm_obj o = (sm_obj) malloc(sizeof(struct sm_sys_func_type));
 
-    o->sm_sys_func.tag = TAG_SYS_FUNC;
-    o->sm_sys_func.code = funcPtr;
-    return o;
+	o->sm_sys_func.tag = TAG_SYS_FUNC;
+	o->sm_sys_func.code = funcPtr;
+	return o;
 }
 
 sm_obj new_sys_syntax(sm_func syntaxPtr)
 {
-    sm_obj o = (sm_obj) malloc(sizeof(struct sm_sys_syntax_type));
+	sm_obj o = (sm_obj) malloc(sizeof(struct sm_sys_syntax_type));
 
-    o->sm_sys_syntax.tag = TAG_SYS_SYNTAX;
-    o->sm_sys_syntax.code = syntaxPtr;
-    return o;
+	o->sm_sys_syntax.tag = TAG_SYS_SYNTAX;
+	o->sm_sys_syntax.code = syntaxPtr;
+	return o;
 }
 
 sm_obj really_new_symbol(char* chars)
@@ -91,14 +108,13 @@ sm_obj really_new_symbol(char* chars)
 		- 1 /* eins zuviel */ + length + 1 /* nullbyte */;
 	sm_obj o = (sm_obj) malloc(bytes);
 	o->sm_symbol.tag = TAG_SYMBOL;
-    strcpy(o->sm_symbol.chars, chars);
-    o->sm_symbol.chars[length] = '\0';
+	strcpy(o->sm_symbol.chars, chars);
+	o->sm_symbol.chars[length] = '\0';
 	return o;
 }
 
 // STATIC FUNCTIONS
-
-static sm_stream new_string_stream(char* inString)
+sm_stream new_string_stream(char* inString)
 {
 	sm_stream s = (sm_stream) malloc(sizeof(struct sm_stream_type));
 	s->type = STRING_STREAM;
@@ -108,11 +124,11 @@ static sm_stream new_string_stream(char* inString)
 }
 
 sm_stream new_file_stream(FILE* inFile) {
-    sm_stream s = (sm_stream) malloc(sizeof(struct sm_stream_type));
-    s->type = FILE_STREAM;
-    s->fileStream = inFile;
-    s->peek = 0;
-    return s;
+	sm_stream s = (sm_stream) malloc(sizeof(struct sm_stream_type));
+	s->type = FILE_STREAM;
+	s->fileStream = inFile;
+	s->peek = 0;
+	return s;
 }
 
 static sm_obj create_singleton(sm_tag tag)

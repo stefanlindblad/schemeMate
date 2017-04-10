@@ -2,8 +2,9 @@
 #define READER_HEADER
 
 #include "schemeMate_objects.h"
+#include "schemeMate_memory.h"
 
-#define EOF_CHAR    ((sm_char)-1)
+#define EOF_CHAR ((sm_char)-1)
 #define INIT_BUFFER_SIZE 32
 
 static void alloc_buffer(buffer *b, int initialSize);
@@ -15,6 +16,7 @@ static void unreadCharacter(sm_stream inStream, sm_char char_to_unread);
 static sm_bool isSeparator(int aChar);
 static sm_obj sm_readList(sm_stream inStream);
 sm_obj sm_readString(sm_stream inStream);
+sm_obj sm_readCString(char* input);
 sm_obj sm_read(sm_stream input);
 
 #endif // READER_HEADER

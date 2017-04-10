@@ -17,7 +17,7 @@ static void grow_buffer(buffer *b)
 static void put_buffer(buffer *b, sm_char ch)
 {
     if ((b->filled+1) == b->size) {
-		growBuffer(b);
+		grow_buffer(b);
     }
     b->memory[b->filled++] = (char) ch;
     b->memory[b->filled] = '\0';
@@ -174,6 +174,10 @@ sm_obj sm_readString(sm_stream inStream)
 		}
 		put_buffer(&b, nextChar);
     }
+}
+
+sm_obj sm_readCString(char* input) {
+    return sm_read(new_string_stream(input));
 }
 
 sm_obj sm_read(sm_stream inStream)

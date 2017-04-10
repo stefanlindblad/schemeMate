@@ -1,7 +1,9 @@
-#pragma once
+#ifndef TEST_HEADER
+#define TEST_HEADER
+
 #include "schemeMate_objects.h"
 #include "schemeMate_reader.h"
 
-#include <stdio.h>
+void sm_selftest();
 
-void scm_selftest();
+#endif // TEST_HEADER

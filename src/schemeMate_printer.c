@@ -5,10 +5,10 @@ void sm_print(FILE* file, sm_obj o)
 	switch (get_tag(o))
 	{
 	case TAG_INT:
-		fprintf(file, "%ld", intValue(o));
+		fprintf(file, "%ld", int_val(o));
 		break;
 	case TAG_FLOAT:
-		fprintf(file, "%lf", floatValue(o));
+		fprintf(file, "%lf", float_val(o));
 		break;
 	case TAG_NIL:
 		fprintf(file, "()");
@@ -20,10 +20,10 @@ void sm_print(FILE* file, sm_obj o)
 		fprintf(file, "#t");
 		break;
 	case TAG_SYMBOL:
-		fprintf(file, "%s", symbolValue(o));
+		fprintf(file, "%s", symbol_val(o));
 		break;
 	case TAG_STRING:
-		fprintf(file, "%s", stringValue(o));
+		fprintf(file, "%s", string_val(o));
 		break;
 	case TAG_CONS:
 		sm_printList(file, o);
@@ -32,7 +32,7 @@ void sm_print(FILE* file, sm_obj o)
 		fprintf(file, "#eof");
 		break;
 	case TAG_OBJ:
-		fprintf(file, "%f", floatValue(o));
+		fprintf(file, "%f", float_val(o));
 		break;
 	case TAG_VOID:
 		fprintf(file, "#void");

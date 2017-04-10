@@ -20,6 +20,22 @@ typedef sm_obj (*sm_func)();
 #define _INIT_BUFFER_SIZE 32
 #define INTIAL_SYMBOLTABLE_SIZE 100
 
+// Error reporting
+
+#define ERROR(msg) error(msg, __FILE__, __LINE__)
+
+#define ASSERT(cond, msg) ASSERT2(cond, msg, __FILE__, __LINE__)
+
+#define ASSERT2(cond, msg, fileName, lineNr) \
+	if (! (cond)) { \
+		fprintf(stderr, "[%s:%d] assertion failed: %s", \
+			fileName, lineNr, msg); \
+		abort(); \
+	}
+
+#define ASSERT_SYMBOL(obj) \
+    ASSERT(is_symbol(obj), "Symbol expected but got something else!")
+
 // Basic objects
 
 enum sm_tag_type
@@ -201,18 +217,5 @@ static inline sm_obj cdr(sm_obj obj) {
     ASSERT(is_cons(obj), "cdr() function expects a cons cell.");
     return (obj->sm_cons.cdr);
 }
-
-// Error reporting
-
-#define ERROR(msg) error(msg, __FILE__, __LINE__)
-
-#define ASSERT(cond, msg) ASSERT2(cond, msg, __FILE__, __LINE__)
-
-#define ASSERT2(cond, msg, fileName, lineNr) \
-	if (! (cond)) { \
-		fprintf(stderr, "[%s:%d] assertion failed: %s", \
-			fileName, lineNr, msg); \
-		abort(); \
-	}
 
 #endif // OBJECTS_HEADER

@@ -1,5 +1,4 @@
 # Global variables
-commondir = common/
 bindir = bin/
 src = src/
 cStd = c99
@@ -23,5 +22,5 @@ link:
 
 # Removing the Binary
 clean:
-	rm game
-	rm $(bindir)*.o
+	del /q ".\bin\*"
+	del schemeMate.exe
