@@ -12,7 +12,12 @@ typedef enum sm_tag_type sm_tag;
 typedef int sm_char;
 typedef int sm_bool;
 
-//#define EOF_CHAR  ((SCM_CHAR)-1)
+typedef sm_obj (*sm_func)();
+// typedef int (*INTFUNC)();
+// typedef void (*VOIDFUNC)();
+// typedef void* (*VOIDPTRFUNC)();
+// #define EOF_CHAR  ((SCM_CHAR)-1)
+
 #define _INIT_BUFFER_SIZE 32
 #define INTIAL_SYMBOLTABLE_SIZE 100
 
@@ -37,7 +42,7 @@ enum sm_tag_type
 	TAG_MAX
 };
 
-struct sm_integer_type {
+struct sm_int_type {
 	sm_tag tag;
 	long iVal;
 };
@@ -74,22 +79,22 @@ struct sm_any_type {
 struct sm_sys_func_type {
 	sm_tag tag;
 	sm_func code;
-}
+};
 
 struct sm_user_func_type {
 	sm_tag tag;
-	sm_obj code;
-	sm_obj 
-}
+	sm_obj args;
+	sm_obj body;
+};
 
 struct sm_sys_syntax_type {
 	sm_tag tag;
 	sm_func code;
-}
+};
 
 union sm_object {
 	struct sm_any_type sm_any;
-	struct sm_integer_type sm_int;
+	struct sm_int_type sm_int;
 	struct sm_float_type sm_float;
 	struct sm_special_type sm_special;
 	struct sm_symbol_type sm_symbol;
@@ -118,52 +123,21 @@ struct sm_stream_type
 
 typedef struct sm_stream_type* sm_stream;
 
-static sm_stream new_stringStream(char* inString)
-{
-	sm_stream s = (sm_stream) malloc(sizeof(struct sm_stream_type));
-	s->type = STRING_STREAM;
-	s->theString = inString;
-	s->index = 0;
-	return s;
-}
 
-typedef struct bufferStruct {
+typedef struct buffer_struct {
 	char *memory;
-	int bufferSize;
-	int fillCount;
+	int size;
+	int filled;
 } buffer;
-
-
-static void allocBuffer(buffer* b, int initialSize)
-{
-	b->memory = malloc(sizeof(initialSize));
-	b->bufferSize = initialSize;
-	b->fillCount = 0;
-}
-
-static void growBuffer(buffer* b)
-{
-	int newSize = b->bufferSize * 2;
-	b->memory = realloc(b->memory, newSize);
-	b->bufferSize = newSize;
-}
-
-static void putBuffer(buffer* b, SCM_CHAR ch)
-{
-	if ((b->fillCount+1) == b->bufferSize) {
-		growBuffer(b);
-	}
-	b->memory[b->fillCount++] = ch;
-}
 
 // Type checks
 
-static inline sm_tag tag(sm_obj obj) {
+static inline sm_tag get_tag(sm_obj obj) {
     return (obj->sm_any.tag);
 }
 
 static inline sm_bool has_tag(sm_obj obj, sm_tag tag) {
-    return (tag(obj) == tag);
+    return (get_tag(obj) == tag);
 }
 
 static inline sm_bool is_int(sm_obj obj) {
@@ -199,7 +173,7 @@ static inline long int_val(sm_obj obj) {
 
 static inline double float_val(sm_obj obj) {
     ASSERT(is_float(obj), "float_val() function expects a float object.");
-    return (obj->sm_int.fVal);
+    return (obj->sm_float.fVal);
 }
 
 static inline char* symbol_val(sm_obj obj) {
@@ -208,11 +182,6 @@ static inline char* symbol_val(sm_obj obj) {
 }
 
 static inline char* string_val(sm_obj obj) {
-    ASSERT(is_string(obj), "string_val() function expects a string object.");
-    return (obj->sm_symbol.chars);
-}
-
-static inline long string_val(sm_obj obj) {
     ASSERT(is_string(obj), "string_val() function expects a string object.");
     return (obj->sm_symbol.chars);
 }
