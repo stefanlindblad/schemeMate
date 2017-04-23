@@ -18,7 +18,6 @@ typedef sm_obj (*sm_func)();
 // typedef void* (*VOIDPTRFUNC)();
 
 #define _INIT_BUFFER_SIZE 32
-#define INTIAL_SYMBOLTABLE_SIZE 100
 
 // Error reporting
 
@@ -40,7 +39,7 @@ typedef sm_obj (*sm_func)();
 
 enum sm_tag_type
 {
-	TAG_INT,
+	TAG_INT = 0,
 	TAG_FLOAT,
 	TAG_NIL,
 	TAG_FALSE,

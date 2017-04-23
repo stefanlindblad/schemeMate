@@ -24,7 +24,7 @@ void sm_selftest()
     ASSERT(rslt->sm_any.tag == TAG_INT, "int tag check failed")
     ASSERT(rslt->sm_int.iVal == 123, "int check failed")
 
-    rslt = sm_readCString("    123");
+    rslt = sm_readCString("        123");
     ASSERT(rslt->sm_any.tag == TAG_INT, "int tag check failed")
     ASSERT(rslt->sm_int.iVal == 123, "int check failed")
 
@@ -69,15 +69,15 @@ void sm_selftest()
     ASSERT(rslt->sm_any.tag == TAG_SYMBOL, "symbol tag check failed")
     ASSERT(strcmp(rslt->sm_symbol.chars, "--->---<---")==0, "symbol check failed")
 
-    sym_abcde1 = sm_readCString("abcde ");
-    sym_abcde2 = sm_readCString("abcde ");
+    sym_abcde1 = sm_readCString("abcde");
+    sym_abcde2 = sm_readCString("abcde");
     ASSERT(sym_abcde1 == sym_abcde2, "symbol identity check failed")
 
     sym_bbb1 = sm_readCString("   bbb ");
     sym_bbb2 = sm_readCString("bbb ");
     ASSERT(sym_bbb1 == sym_bbb2, "symbol identity check failed")
 
-    sym_abcde3 = sm_readCString("abcde ");
+    sym_abcde3 = sm_readCString("abcde    ");
     ASSERT(sym_abcde3 == sym_abcde1, "symbol identity check failed")
 
     symx1 = sm_readCString("abcde ");
@@ -93,7 +93,7 @@ void sm_selftest()
     ASSERT(get_tag(rslt) == TAG_CONS, "empty list read check failed")
     ASSERT(get_tag(rslt->sm_cons.car) == TAG_INT, "car list read check failed")
     ASSERT(get_tag(rslt->sm_cons.cdr) == TAG_NIL, "cdr list read check failed")
-    ASSERT(intValue(car(rslt)) == 123, "inval list read check failed")
+    ASSERT(int_val(car(rslt)) == 123, "inval list read check failed")
 
     rslt = sm_readCString(" (a b c) ");
     ASSERT(get_tag(rslt) == TAG_CONS, "empty list read check failed")
@@ -115,5 +115,5 @@ void sm_selftest()
     l3 = car(cdr(l2));
     ASSERT(is_symbol(car(l3)), "read check failed")
 
-    fprintf(stderr, "Done (selftest)\n");
+    fprintf(stderr, "Successfully finished the Interpreter Selftest.\n");
 }

@@ -19,7 +19,7 @@ static void repl()
 		expr = sm_read(INPUT);
 		//result = sm_eval(expr);
 		if (get_tag(result) != TAG_VOID) {
-	    	sm_print(stdout, result);
+			sm_print(stdout, expr);
 	    	fprintf(stdout, "\n");
 		}
 	}
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 {
 	init_system();
 	init_memory();
-	printf("Welcome to schemeMate [0.1 ]\n");
+	printf("Welcome to schemeMate [0.1]\n");
 	sm_selftest();
 	repl();
 	exit(0);

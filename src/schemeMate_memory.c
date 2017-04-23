@@ -2,8 +2,8 @@
 
 void init_memory()
 {
-	symbolTable = (sm_obj*)malloc(sizeof(sm_obj) * INTIAL_SYMBOLTABLE_SIZE);
-	symbolTableSize = INTIAL_SYMBOLTABLE_SIZE;
+	symbolTable = (sm_obj*) malloc(sizeof(sm_obj) * INITIAL_SYMBOLTABLE_SIZE);
+	symbolTableSize = INITIAL_SYMBOLTABLE_SIZE;
 	numKnownSymbols = 0;
     memset(symbolTable, 0, (sizeof(sm_obj) * INITIAL_SYMBOLTABLE_SIZE));
 }
@@ -20,8 +20,14 @@ sm_obj new_int(int value)
 
 sm_obj new_symbol(char* chars)
 {
-	sm_obj o = really_new_symbol(chars);
-	return o;
+	sm_obj existingSymbol = get_symbol_or_null(chars);
+
+    if (existingSymbol == NULL) {
+		sm_obj newSymbol = really_new_symbol(chars);
+		remember_symbol(newSymbol);
+		return newSymbol;
+    }
+    return existingSymbol;
 }
 
 sm_obj new_cons(sm_obj car, sm_obj cdr)
@@ -167,10 +173,10 @@ static sm_obj get_symbol_or_null(char* chars)
 
 static void remember_symbol(sm_obj obj)
 {
+
 	ASSERT_SYMBOL(obj);
 	int idx0, idx;
     idx0 = idx = hash(obj->sm_symbol.chars) % symbolTableSize;
-
     for (;;) {
 		sm_obj slotValue = symbolTable[idx];
 		if (slotValue == NULL) {

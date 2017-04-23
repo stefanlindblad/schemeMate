@@ -23,12 +23,12 @@ static void put_buffer(buffer *b, sm_char ch)
     b->memory[b->filled] = '\0';
 }
 
-long a2l(char* cp)
+long long a2l(char* cp)
 { 
-	long val = 0;
+	long long val = 0;
 	char c;
 	while ((c = *cp++) != '\0')
-		val = val * 10 + (c - '\0');
+		val = val * 10 + (c - '0');
 	return val;
 }
 
@@ -37,8 +37,9 @@ static sm_char skipSeparators(sm_stream inStream)
 	sm_char nextChar;
 	do {
 		nextChar = readCharacter(inStream);
-		if (nextChar == EOF_CHAR)
+		if (nextChar == EOF_CHAR) {
 			return EOF_CHAR;
+		}
 	} while (isSeparator(nextChar));
 	return nextChar;
 }
@@ -57,14 +58,14 @@ static sm_bool isSeparator(sm_char c)
 	}
 }
 
-static sm_bool allDigits(char* cp)
+static sm_bool all_digits(char* cp)
 {
 	char c;
 
-	if((*cp) == '\0')
+	if(*cp == '\0')
 		return 0;
 
-	while ((c = (*cp)++) != '\0') {
+	while ((c = *cp++) != '\0') {
 		if ((c < '0') || (c > '9'))
 			return 0;
 	}
@@ -132,6 +133,10 @@ static sm_obj sm_readList(sm_stream inStream)
 	sm_obj car;
 	sm_obj cdr;
 	nextChar = skipSeparators(inStream);
+	if (nextChar == EOF_CHAR) {
+		ERROR("Opening bracket ( is missing closing bracket )!");
+		return new_eof();
+	}
 	if (nextChar == ')')
 	{
 		return new_nil();
@@ -147,18 +152,17 @@ sm_obj sm_readString(sm_stream inStream)
 	buffer b;
     sm_char nextChar;
     char *string;
-
     alloc_buffer(&b, INIT_BUFFER_SIZE);
     for (;;) {
 		nextChar = readCharacter(inStream);
 
 		if (nextChar == EOF_CHAR) {
-	    	fprintf(stderr, "unterminated string");
-	    	return new_eof();
+			ERROR("Unterminated String!");
+			return new_eof();
 		}
 		if (nextChar == '"') {
-	    	string = b.memory;
-	    	return new_string(string);
+			string = b.memory;
+			return new_string(string);
 		}
 		if (nextChar == '\\') {
 	    	sm_char escapedChar;
@@ -185,14 +189,19 @@ sm_obj sm_read(sm_stream inStream)
 	buffer b;
     sm_char nextChar;
     char *input;
-
     alloc_buffer(&b, INIT_BUFFER_SIZE);
     nextChar = skipSeparators(inStream);
     if (nextChar == EOF_CHAR) {
 		return new_eof();
     }
     if (nextChar == '(') {
-		return sm_readList(inStream);
+		sm_obj result = sm_readList(inStream);
+		if (result.sm_any.tag == TAG_EOF) {
+			ERROR("Opening bracket ( is missing closing bracket )!");
+			return new_eof();
+		}
+		return result;
+	}
     }
     if (nextChar == '"') {
 		return sm_readString(inStream);
@@ -214,14 +223,14 @@ sm_obj sm_read(sm_stream inStream)
     }
     unreadCharacter(inStream, nextChar);
 
-    if (allDigits(b.memory)) {
-		long iVal = a2l(b.memory);
+    if (all_digits(b.memory)) {
+		long long iVal = a2l(b.memory);
 		return new_int(iVal);
     }
     input = b.memory;
 
     if (input[0] == '-') {
-		if (allDigits(input+1)) {
+		if (all_digits(input+1)) {
 	    	long iVal = a2l(input+1);
 	    	return new_int(-iVal);
 		}
