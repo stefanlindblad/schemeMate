@@ -1,15 +1,20 @@
 #include "schemeMate_env.h"
 
-static sm_obj eof_singleton;
-static sm_obj *symbolTable = NULL;
-static int numKnownSymbols = 0;
-static int symbolTableSize = 0;
+struct environment* environment = NULL;
 
-static struct environment* allocateEnvironment(int size)
+static struct environment* allocate_env(unsigned env_size)
 {
-	int nBytes;
+	unsigned bytes;
 	struct environment* env;
-	numBytes = sizeof()
 
+	bytes = (unsigned) sizeof(struct environment) + (env_size-1) * (unsigned) sizeof(struct entry);
+
+	env = (struct environment*) malloc(bytes);
+	memset(env, 0, bytes); // What is this doing again?
+
+	env->used_slots = 0;
+	env->allocated_slots = env_size;
+
+	return env;
 }
 

@@ -196,13 +196,12 @@ sm_obj sm_read(sm_stream inStream)
     }
     if (nextChar == '(') {
 		sm_obj result = sm_readList(inStream);
-		if (result.sm_any.tag == TAG_EOF) {
+		if (result->sm_any.tag == TAG_EOF) {
 			ERROR("Opening bracket ( is missing closing bracket )!");
 			return new_eof();
 		}
 		return result;
 	}
-    }
     if (nextChar == '"') {
 		return sm_readString(inStream);
     }

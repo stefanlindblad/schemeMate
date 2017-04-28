@@ -17,7 +17,7 @@ static void repl()
 	for(;;) {
 		fprintf(stdout, ">>> ");
 		expr = sm_read(INPUT);
-		//result = sm_eval(expr);
+		result = sm_eval(expr);
 		if (get_tag(result) != TAG_VOID) {
 			sm_print(stdout, expr);
 	    	fprintf(stdout, "\n");
