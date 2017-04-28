@@ -13,9 +13,6 @@ typedef int sm_char;
 typedef int sm_bool;
 
 typedef sm_obj (*sm_func)();
-// typedef int (*INTFUNC)();
-// typedef void (*VOIDFUNC)();
-// typedef void* (*VOIDPTRFUNC)();
 
 #define _INIT_BUFFER_SIZE 32
 
@@ -118,6 +115,19 @@ union sm_object {
 	struct sm_sys_syntax_type sm_sys_syntax;
 	struct sm_user_func_type sm_user_func;
 };
+
+struct sm_entry {
+    sm_obj key;
+    sm_obj value;
+};
+
+struct sm_environment {
+    unsigned used_slots;
+    unsigned allocated_slots;
+    struct sm_entry entries[1];
+};
+
+typedef struct sm_environment* sm_env;
 
 // Data stream functionality
 

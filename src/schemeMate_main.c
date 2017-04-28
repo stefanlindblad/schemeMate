@@ -1,5 +1,7 @@
 #include "schemeMate_main.h"
 
+#define SELFTEST
+
 static void init_system() {
     INPUT = new_file_stream(stdin);
     SM_NIL = new_nil();
@@ -17,21 +19,22 @@ static void repl()
 	for(;;) {
 		fprintf(stdout, ">>> ");
 		expr = sm_read(INPUT);
-		result = sm_eval(expr);
-		if (get_tag(result) != TAG_VOID) {
+		//result = sm_eval(expr);
+		if (get_tag(expr) != TAG_VOID) {
 			sm_print(stdout, expr);
 	    	fprintf(stdout, "\n");
 		}
 	}
 }
 
-
 int main(int argc, char *argv[])
 {
 	init_system();
 	init_memory();
 	printf("Welcome to schemeMate [0.1]\n");
-	sm_selftest();
+	#ifdef SELFTEST
+		sm_selftest();
+	#endif
 	repl();
 	exit(0);
 }

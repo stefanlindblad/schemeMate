@@ -1,17 +1,14 @@
 #ifndef ENV_HEADER
 #define ENV_HEADER
 
-struct sm_entry {
-    sm_obj key;
-    sm_obj value;
-};
+#include "schemeMate_objects.h"
 
-struct environment {
-    unsigned used_slots;
-    unsigned allocated_slots;
-    struct sm_entry entries[1];
-};
+static inline unsigned object_hash(sm_obj o)
+{
+    return (unsigned) o;
+}
 
-static struct environment* allocate_env(unsigned env_size);
+sm_env allocate_env(unsigned env_size);
+void grow_env(sm_env env);
 
 #endif // ENV_HEADER
