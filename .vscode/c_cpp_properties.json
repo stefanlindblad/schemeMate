@@ -1,0 +1,63 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "C:\\MinGW\\include\\c++\\6.3.0",
+                "${workspaceRoot}",
+                "/usr/include",
+                "/usr/local/include"
+                
+            ],
+            "defines": [],
+            "browse": {
+                "path": [
+                    "C:\\MinGW\\include\\c++\\6.3.0",
+                    "${workspaceRoot}",
+                    "/usr/include",
+                    "/usr/local/include"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "C:\\MinGW\\include\\c++\\6.3.0",
+                "${workspaceRoot}",
+                "/usr/include",
+                "/usr/local/include"
+            ],
+            "defines": [],
+            "browse": {
+                "path": [
+                    "C:\\MinGW\\include\\c++\\6.3.0",
+                    "${workspaceRoot}",
+                    "/usr/include",
+                    "/usr/local/include"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "C:\\MinGW\\include\\c++\\6.3.0",
+                "${workspaceRoot}",
+                "/usr/include",
+                "/usr/local/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE"
+            ],
+            "browse": {
+                "path": [],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        }
+    ]
+}
