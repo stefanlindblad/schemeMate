@@ -62,7 +62,7 @@ static sm_bool all_digits(char* cp)
 {
 	char c;
 
-	if(*cp == '\0')
+	if (*cp == '\0')
 		return 0;
 
 	while ((c = *cp++) != '\0') {
@@ -153,7 +153,7 @@ sm_obj sm_readString(sm_stream inStream)
     sm_char nextChar;
     char *string;
     alloc_buffer(&b, INIT_BUFFER_SIZE);
-    for (;;) {
+    while (true) {
 		nextChar = readCharacter(inStream);
 
 		if (nextChar == EOF_CHAR) {
@@ -211,7 +211,7 @@ sm_obj sm_read(sm_stream inStream)
 		return new_cons(new_symbol("quote"), new_cons(quotedExpr, new_nil()));
     }
 
-    for (;;) {
+    while (true) {
 		if (nextChar == EOF_CHAR)
 	    	break;
 		if (isSeparator(nextChar) || (nextChar == '(') || (nextChar == ')')) {
