@@ -14,6 +14,9 @@ typedef int sm_bool;
 
 typedef sm_obj (*sm_func)();
 
+// Enable usage of booleans
+typedef enum { false, true } bool;
+
 #define _INIT_BUFFER_SIZE 32
 
 // Error reporting
