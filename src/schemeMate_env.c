@@ -1,5 +1,10 @@
 #include "schemeMate_env.h"
 
+void init_environment()
+{
+	main_environment = allocate_env(ENV_INIT_SIZE);
+}
+
 sm_env allocate_env(unsigned env_size)
 {
 	unsigned bytes;
@@ -51,4 +56,32 @@ void grow_env(sm_env oldEnv)
     	}
     newEnv->used_slots = oldEnv->used_slots;
     oldEnv = newEnv;
+}
+
+void add_binding(sm_obj key, sm_obj value, sm_env env)
+{
+    int hash_id = (int) (object_hash(key) % env->allocated_slots);
+	int original_id = hash_id;
+	struct sm_entry *entry;
+
+    while (true) {
+		entry = &(env->entries[hash_id]);
+		if (entry->key == NULL) {
+	    	entry->key = key;
+	    	entry->value = value;
+	    	env->used_slots++;
+	    	if (env->used_slots > (env->allocated_slots * 3 / 4))
+				grow_env(env);
+	    	return;
+		}
+		if (entry->key == key) {
+	    	entry->value = value;
+	    	return;
+		}
+
+		hash_id = (hash_id + 1) % env->allocated_slots;
+
+		if (hash_id == original_id)
+	    	ERROR("Happened to do round trip in add binding");
+    }
 }
