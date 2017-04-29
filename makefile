@@ -6,7 +6,11 @@ cppStd = c++11
 debugFlag = -g
 
 # Main build target
-all: compile link
+all: checkdir compile link
+
+# check for build dir
+checkdir:
+	if not exist "%cd%\bin" mkdir bin
 
 # Compile Commands
 compile:
