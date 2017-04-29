@@ -3,7 +3,7 @@ bindir = bin/
 src = src/
 cStd = c99
 cppStd = c++11
-debugFlag = 
+debugFlag = -g
 
 # Main build target
 all: compile link
