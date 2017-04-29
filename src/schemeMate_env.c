@@ -1,24 +1,29 @@
 #include "schemeMate_env.h"
 
+sm_env MAIN_ENV = NULL;
+
 void init_environment()
 {
-	main_environment = allocate_env(ENV_INIT_SIZE);
+	MAIN_ENV = allocate_env(ENV_INIT_SIZE);
 }
 
 sm_env allocate_env(unsigned env_size)
 {
 	unsigned bytes;
 	sm_env env;
+	struct sm_entry *entries;
 
-	bytes = (unsigned) sizeof(struct sm_environment) + (env_size-1) * (unsigned) sizeof(struct sm_entry);
-	env = (sm_env) malloc(bytes);
+	// allocate memory for the entries
+	bytes = (unsigned) sizeof(struct sm_entry);
+	entries = (struct sm_entry*) malloc(bytes);
+	memset(entries, 0, bytes); // fills the entries with 000..
 
-	// fills the memory for env with zeros
-	memset(env, 0, bytes); 
-
+	// allocate the environment
+	env = (struct sm_environment*) malloc(sizeof(struct sm_environment));
+	env->parent = NULL;
 	env->used_slots = 0;
 	env->allocated_slots = env_size;
-
+	env->entries = entries;
 	return env;
 }
 
@@ -41,7 +46,7 @@ void grow_env(sm_env oldEnv)
 
 	    	oldValue = oldEnv->entries[i].value;
 	    	startId = newId = (int) ( object_hash(oldKey) % newSize );
-	    	for (;;) {
+	    	while (true) {
 				if (newEnv->entries[newId].key == NULL) {
 		    		newEnv->entries[newId].key = oldKey;
 		    		newEnv->entries[newId].value = oldValue;
@@ -62,7 +67,7 @@ void add_binding(sm_obj key, sm_obj value, sm_env env)
 {
     int hash_id = (int) (object_hash(key) % env->allocated_slots);
 	int original_id = hash_id;
-	struct sm_entry *entry;
+	struct sm_entry *entry; 
 
     while (true) {
 		entry = &(env->entries[hash_id]);
@@ -83,5 +88,35 @@ void add_binding(sm_obj key, sm_obj value, sm_env env)
 
 		if (hash_id == original_id)
 	    	ERROR("Happened to do round trip in add binding");
+    }
+}
+
+sm_obj get_binding(sm_obj key, sm_env env)
+{
+	ASSERT_SYMBOL(key);
+
+	int hash_id;
+	int original_id;
+	struct sm_entry *entry; 
+
+    while (true) {
+		hash_id = (int) ( object_hash(key) % env->allocated_slots );
+		original_id = hash_id;
+		while (true) {
+	    	entry = &(env->entries[hash_id]);
+	    	if (entry->key == key)
+				return (entry->value);
+
+	    	if (entry->key == NULL) {
+				if (env->parent == NULL) {
+		    		return NULL;
+				}
+				env = env->parent;
+				break;
+	    	}
+	    	hash_id = (hash_id+1) % env->allocated_slots;
+	    	if (hash_id == original_id)
+				ERROR("Happened to do round trip in get binding");
+		}
     }
 }

@@ -16,7 +16,7 @@ static sm_obj evalPlus(sm_obj args) {
 	int sum = 0;
 	sm_obj nextCell = args;
  
-	while(nextCell != new_nil()) {
+	while(nextCell != sm_nil()) {
 		sm_obj nextArg = car(nextCell);
 		sm_obj valueOfNext;
 

@@ -4,11 +4,11 @@
 
 static void init_system() {
     INPUT = new_file_stream(stdin);
-    SM_NIL = new_nil();
-    SM_TRUE = new_true();
-    SM_FALSE = new_false();
-    SM_VOID = new_void();
-    SM_EOF = new_eof();
+    SM_NIL = sm_nil();
+    SM_TRUE = sm_true();
+    SM_FALSE = sm_false();
+    SM_VOID = sm_void();
+    SM_EOF = sm_eof();
 }
 
 static void repl()
@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
 {
 	init_system();
 	init_memory();
+	init_environment();
 	printf("Welcome to schemeMate [0.1]\n");
 	#ifdef SELFTEST
 		sm_selftest();

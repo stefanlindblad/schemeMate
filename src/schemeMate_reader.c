@@ -135,11 +135,11 @@ static sm_obj sm_readList(sm_stream inStream)
 	nextChar = skipSeparators(inStream);
 	if (nextChar == EOF_CHAR) {
 		ERROR("Opening bracket ( is missing closing bracket )!");
-		return new_eof();
+		return sm_eof();
 	}
 	if (nextChar == ')')
 	{
-		return new_nil();
+		return sm_nil();
 	}
 	unreadCharacter(inStream, nextChar);
 	car = sm_read(inStream);
@@ -158,7 +158,7 @@ sm_obj sm_readString(sm_stream inStream)
 
 		if (nextChar == EOF_CHAR) {
 			ERROR("Unterminated String!");
-			return new_eof();
+			return sm_eof();
 		}
 		if (nextChar == '"') {
 			string = b.memory;
@@ -192,13 +192,13 @@ sm_obj sm_read(sm_stream inStream)
     alloc_buffer(&b, INIT_BUFFER_SIZE);
     nextChar = skipSeparators(inStream);
     if (nextChar == EOF_CHAR) {
-		return new_eof();
+		return sm_eof();
     }
     if (nextChar == '(') {
 		sm_obj result = sm_readList(inStream);
 		if (result->sm_any.tag == TAG_EOF) {
 			ERROR("Opening bracket ( is missing closing bracket )!");
-			return new_eof();
+			return sm_eof();
 		}
 		return result;
 	}
@@ -208,7 +208,7 @@ sm_obj sm_read(sm_stream inStream)
     if (nextChar == '\'') {
 		sm_obj quotedExpr;
 		quotedExpr = sm_read(inStream);
-		return new_cons(new_symbol("quote"), new_cons(quotedExpr, new_nil()));
+		return new_cons(new_symbol("quote"), new_cons(quotedExpr, sm_nil()));
     }
 
     while (true) {
@@ -237,15 +237,15 @@ sm_obj sm_read(sm_stream inStream)
 
     if (input[0] == '#') {
 		if (strcmp(input, "#t") == 0)
-	    	return new_true();
+	    	return sm_true();
 		if (strcmp(input, "#f") == 0)
-	    	return new_false();
+	    	return sm_false();
 		if (strcmp(input, "#void") == 0)
-	    	return new_void();
+	    	return sm_void();
     }
 
     if (strcmp(input, "nil") == 0) {
-		return new_nil();
+		return sm_nil();
     }
 
     return new_symbol(input);

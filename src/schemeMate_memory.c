@@ -50,31 +50,31 @@ sm_obj new_string(char* chars) {
 	return o;
 }
 
-sm_obj new_eof()
+sm_obj sm_eof()
 {
 	sm_obj o = create_singleton(TAG_EOF);
 	return o;
 }
 
-sm_obj new_nil()
+sm_obj sm_nil()
 {
 	sm_obj o = create_singleton(TAG_NIL);
 	return o;
 }
 
-sm_obj new_false()
+sm_obj sm_false()
 {
 	sm_obj o = create_singleton(TAG_FALSE);
 	return o;
 }
 
-sm_obj new_true()
+sm_obj sm_true()
 {
 	sm_obj o = create_singleton(TAG_TRUE);
 	return o;
 }
 
-sm_obj new_void()
+sm_obj sm_void()
 {
 	sm_obj o = create_singleton(TAG_VOID);
 	return o;
@@ -150,48 +150,47 @@ static sm_obj create_singleton(sm_tag tag)
 
 static sm_obj get_symbol_or_null(char* chars)
 {
-	int idx, idx0;
-    idx = idx0 = hash(chars) % symbolTableSize;
+	int hash_id;
+	int original_id;
+    hash_id = str_hash(chars) % symbolTableSize;
+	original_id = hash_id;
 
     while (true) {
-		sm_obj existingAtI = symbolTable[idx];
-		if (existingAtI == NULL) {
+		sm_obj symbol = symbolTable[hash_id];
+		if (symbol == NULL)
 	    	return NULL;
-		}
-		if (strcmp(existingAtI->sm_symbol.chars, chars) == 0) {
-	    	return existingAtI;
-		}
-		idx++;
-		if (idx == symbolTableSize) {
-	    	idx = 0;
-		}
-		if (idx == idx0) {
+		if (strcmp(symbol->sm_symbol.chars, chars) == 0)
+	    	return symbol;
+		hash_id++;
+		if (hash_id == symbolTableSize)
+	    	hash_id = 0;
+		if (hash_id == original_id)
 	    	return NULL;
-		}
     }
 }
 
 static void remember_symbol(sm_obj obj)
 {
-
 	ASSERT_SYMBOL(obj);
-	int idx0, idx;
-    idx0 = idx = hash(obj->sm_symbol.chars) % symbolTableSize;
+
+	int hash_id;
+	int original_id;
+    hash_id = str_hash(obj->sm_symbol.chars) % symbolTableSize;
+	original_id = hash_id;
+
     while (true) {
-		sm_obj slotValue = symbolTable[idx];
+		sm_obj slotValue = symbolTable[hash_id];
 		if (slotValue == NULL) {
-	    	symbolTable[idx] = obj;
+	    	symbolTable[hash_id] = obj;
 	    	numKnownSymbols++;
 	    	check_table_size();
 	    	return;
 		}
-		idx++;
-		if (idx == symbolTableSize) {
-	    	idx = 0;
-		}
-		if (idx == idx0) {
-	    	ERROR("symboltable full");
-		}
+		hash_id++;
+		if (hash_id == symbolTableSize)
+	    	hash_id = 0;
+		if (hash_id == original_id)
+	    	ERROR("The symbol table is full.");
     }
 
 	if (numKnownSymbols == symbolTableSize) {
@@ -216,20 +215,20 @@ static void grow_symbol_table()
     for (i = 0; i < symbolTableSize; i++) {
 		sm_obj slotValue = symbolTable[i];
 		if (slotValue != NULL) {
-	    	int newIdx, newIdx0;
-	    	newIdx = newIdx0 = hash(slotValue->sm_symbol.chars) % newSize;
+	    	int hash_id;
+			int original_id;
+	    	hash_id = str_hash(slotValue->sm_symbol.chars) % newSize;
+			original_id = hash_id;
 	    	while (true) {
-				if (newTable[newIdx] == NULL) {
-			    	newTable[newIdx] = slotValue;
+				if (newTable[hash_id] == NULL) {
+			    	newTable[hash_id] = slotValue;
 			    	break;
 				}
-				newIdx++;
-				if (newIdx == newSize) {
-		    		newIdx = 0;
-				}
-				if (newIdx == newIdx0) {
-				    ERROR("new table full");
-				}
+				hash_id++;
+				if (hash_id == newSize)
+		    		hash_id = 0;
+				if (hash_id == original_id)
+				    ERROR("The new symbol table is full.");
 	    	}
 		}
     }

@@ -85,7 +85,7 @@ void sm_selftest()
     ASSERT(symx1 != symx2, "symbol identity check failed")
 
     rslt = sm_readCString("()");
-    ASSERT(rslt == new_nil(), "empty list read check failed")
+    ASSERT(rslt == sm_nil(), "empty list read check failed")
     ASSERT(get_tag(rslt) == TAG_NIL, "empty list read check failed")
     ASSERT(has_tag(rslt, TAG_NIL), "empty list read check failed")
 
@@ -114,6 +114,20 @@ void sm_selftest()
     ASSERT(is_cons(cdr(l2)), " read check failed")
     l3 = car(cdr(l2));
     ASSERT(is_symbol(car(l3)), "read check failed")
+
+    add_binding(new_symbol("a"), new_int(120), MAIN_ENV);
+    add_binding(new_symbol("b"), new_int(200), MAIN_ENV);
+
+    rslt = get_binding(new_symbol("a"), MAIN_ENV);
+    ASSERT(is_int(rslt), "get_binding does not work as expected");
+    ASSERT(int_val(rslt) == 120, "get_binding does not work as expected");
+
+    rslt = get_binding(new_symbol("b"), MAIN_ENV);
+    ASSERT(is_int(rslt), "get_binding does not work as expected");
+    ASSERT(int_val(rslt) == 200, "get_binding does not work as expected");
+
+    rslt = get_binding(new_symbol("c"), MAIN_ENV);
+    ASSERT(rslt == NULL, "get_binding does not work as expected");
 
     fprintf(stderr, "Successfully finished the Interpreter Selftest.\n");
 }

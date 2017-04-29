@@ -6,18 +6,13 @@
 #include <string.h>
 
 // Basic defines
-
 typedef union sm_object* sm_obj;
 typedef enum sm_tag_type sm_tag;
 typedef int sm_char;
 typedef int sm_bool;
-
 typedef sm_obj (*sm_func)();
-
-// Enable usage of booleans
+typedef struct sm_environment* sm_env;
 typedef enum { false, true } bool;
-
-#define _INIT_BUFFER_SIZE 32
 
 // Error reporting
 
@@ -106,6 +101,18 @@ struct sm_sys_syntax_type {
 	sm_func code;
 };
 
+struct sm_entry {
+    sm_obj key;
+    sm_obj value;
+};
+
+struct sm_environment {
+    struct sm_environment *parent;
+    unsigned int used_slots;
+    unsigned int allocated_slots;
+    struct sm_entry *entries;
+};
+
 union sm_object {
 	struct sm_any_type sm_any;
 	struct sm_int_type sm_int;
@@ -119,44 +126,8 @@ union sm_object {
 	struct sm_user_func_type sm_user_func;
 };
 
-struct sm_entry {
-    sm_obj key;
-    sm_obj value;
-};
-
-struct sm_environment {
-    unsigned used_slots;
-    unsigned allocated_slots;
-    struct sm_entry entries[1];
-};
-
-typedef struct sm_environment* sm_env;
-
-// Data stream functionality
-
-enum streamformat
-{
-	FILE_STREAM,
-	STRING_STREAM
-};
-
-struct sm_stream_type
-{
-	enum streamformat type;
-	FILE* fileStream;
-	char* theString;
-	int index;
-	int peek;
-};
-
-typedef struct sm_stream_type* sm_stream;
-
-
-typedef struct buffer_struct {
-	char *memory;
-	int size;
-	int filled;
-} buffer;
+// program wide data
+extern sm_env MAIN_ENV;
 
 // Type checks
 
