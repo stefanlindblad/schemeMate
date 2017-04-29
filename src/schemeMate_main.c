@@ -16,7 +16,7 @@ static void repl()
 	sm_obj expr;
 	sm_obj result;
 
-	for(;;) {
+	while (true) {
 		fprintf(stdout, ">>> ");
 		expr = sm_read(INPUT);
 		//result = sm_eval(expr);

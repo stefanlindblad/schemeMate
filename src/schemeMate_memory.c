@@ -153,7 +153,7 @@ static sm_obj get_symbol_or_null(char* chars)
 	int idx, idx0;
     idx = idx0 = hash(chars) % symbolTableSize;
 
-    for (;;) {
+    while (true) {
 		sm_obj existingAtI = symbolTable[idx];
 		if (existingAtI == NULL) {
 	    	return NULL;
@@ -177,7 +177,7 @@ static void remember_symbol(sm_obj obj)
 	ASSERT_SYMBOL(obj);
 	int idx0, idx;
     idx0 = idx = hash(obj->sm_symbol.chars) % symbolTableSize;
-    for (;;) {
+    while (true) {
 		sm_obj slotValue = symbolTable[idx];
 		if (slotValue == NULL) {
 	    	symbolTable[idx] = obj;
@@ -218,7 +218,7 @@ static void grow_symbol_table()
 		if (slotValue != NULL) {
 	    	int newIdx, newIdx0;
 	    	newIdx = newIdx0 = hash(slotValue->sm_symbol.chars) % newSize;
-	    	for (;;) {
+	    	while (true) {
 				if (newTable[newIdx] == NULL) {
 			    	newTable[newIdx] = slotValue;
 			    	break;
