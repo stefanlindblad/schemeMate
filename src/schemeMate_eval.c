@@ -1,50 +1,78 @@
 #include "schemeMate_eval.h"
 
-static sm_obj eof_singleton;
-static sm_obj *symbolTable = NULL;
-static int numKnownSymbols = 0;
-static int symbolTableSize = 0;
-
-static struct environment* allocateEnvironment(int size) {
-	int nBytes;
-	struct environment* env;
-	numBytes = sizeof()
-
+void init_evaluation()
+{
+    evalStackBottom = (sm_obj*) malloc(sizeof(sm_obj) * INIT_EVALUATION_STACK_SIZE);
+    evalStackPointer = evalStackBottom;
+    evalStackTop = &(evalStackBottom[INIT_EVALUATION_STACK_SIZE]);
 }
 
-static sm_obj evalPlus(sm_obj args) {
+void sm_eval_intern(sm_obj o) 
+{
+    sm_obj obj;
+    switch (get_tag(o)) {
+		case TAG_SYMBOL:
+	    	obj = get_binding(o);
+	    	if (obj == NULL) 
+		 		ERROR("Could not find a binding");
+	    	PUSH(obj);
+	    	return;
+		case TAG_CONS:
+	    	callDepth++;
+	    	sm_eval_list(o);
+	    	callDepth--;
+	    	return;
+		default:
+	    	PUSH(o);
+	    	return;
+    }
+	return POP();
+}
+
+sm_obj sm_eval(sm_obj o)
+{
+    sm_eval_intern(o);
+    return POP();
+}
+
+sm_obj sm_eval_list(sm_obj o) 
+{
+	sm_obj func = car(o);
+	sm_obj args = cdr(o);
+	sm_obj obj = sm_eval(func);
+
+	switch (get_tag(obj)) {
+	case TAG_SYS_FUNC:
+	{
+		int argc = 0;
+		while (!is_nil(args)) {
+		    sm_obj nextArg = car(args);
+		    args = cdr(args);
+		    PUSH(sm_eval(nextArg));
+		    argc++;
+		}
+		(*obj->sm_sys_func.code)(argc);
+		return;
+	}
+	case TAG_SYS_SYNTAX:
+	    (*obj->sm_sys_syntax.code)(args);
+	    return;
+
+	default:
+	    ERROR("Could not retrieve system function.");
+    }
+}
+
+static void internal_plus(int argc)
+{
 	int sum = 0;
-	sm_obj nextCell = args;
  
-	while(nextCell != sm_nil()) {
-		sm_obj nextArg = car(nextCell);
-		sm_obj valueOfNext;
-
-		valueOfNext = scm_eval(nextCell);
-		breakpoint();
-
-		nextCell = cdr(nextCell);
+	while(--argc >= 0) {
+		sm_obj next_value = POP();
+		if(is_int(next_value))
+			sum = sum + int_val(next_value);
+		else
+			ERROR("Argument to + is NaN");
 	}
-	breakpoint();
+	PUSH(new_int(sum));
 }
-
-static sm_obj evalMinus(sm_obj args) {
-	breakpoint();
-}
-
-
-sm_obj evalList(sm_obj expr) {
-
-	sm_obj func = CAR(expr);
-	sm_obj args = CDR(expr);
-
-	if (func == new_symbol("+")) {
-		return evalPlus(args);
-	}
-	if (func == new_symbol("-")) {
-		return evalMinus(args);
-	}
-
-	ERROR("Is not implemented yet");
-}
-

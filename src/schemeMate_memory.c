@@ -120,19 +120,19 @@ sm_obj really_new_symbol(char* chars)
 }
 
 // STATIC FUNCTIONS
-sm_stream new_string_stream(char* inString)
+sm_stream new_string_stream(char* string)
 {
 	sm_stream s = (sm_stream) malloc(sizeof(struct sm_stream_type));
 	s->type = STRING_STREAM;
-	s->theString = inString;
+	s->string = string;
 	s->index = 0;
 	return s;
 }
 
-sm_stream new_file_stream(FILE* inFile) {
+sm_stream new_file_stream(FILE* file) {
 	sm_stream s = (sm_stream) malloc(sizeof(struct sm_stream_type));
 	s->type = FILE_STREAM;
-	s->fileStream = inFile;
+	s->file = file;
 	s->peek = 0;
 	return s;
 }

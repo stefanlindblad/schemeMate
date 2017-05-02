@@ -79,7 +79,7 @@ static sm_char readCharacter(sm_stream inStream)
 		case STRING_STREAM:
 		{
 			int i = inStream->index;
-			sm_char nextChar = inStream->theString[i++];
+			sm_char nextChar = inStream->string[i++];
 			if (nextChar == '\0') {
 				return EOF_CHAR;
 			}
@@ -94,7 +94,7 @@ static sm_char readCharacter(sm_stream inStream)
 		    	inStream->peek = 0;
 		    	return nextChar;
 			}
-			nextChar = fgetc(inStream->fileStream);
+			nextChar = fgetc(inStream->file);
 			if (nextChar < 0)
 				return EOF_CHAR;
 			return nextChar;

@@ -16,8 +16,8 @@ enum streamformat
 struct sm_stream_type
 {
 	enum streamformat type;
-	FILE* fileStream;
-	char* theString;
+	FILE* file;
+	char* string;
 	int index;
 	int peek;
 };
