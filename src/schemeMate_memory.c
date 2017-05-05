@@ -89,12 +89,12 @@ sm_obj new_user_func(sm_obj args, sm_obj body)
     return o;
 }
 
-sm_obj new_sys_func(sm_func funcPtr)
+sm_obj new_sys_func(sm_func funcPtr, char *name)
 {
 	sm_obj o = (sm_obj) malloc(sizeof(struct sm_sys_func_type));
-
 	o->sm_sys_func.tag = TAG_SYS_FUNC;
 	o->sm_sys_func.code = funcPtr;
+	o->sm_sys_func.name = name;
 	return o;
 }
 

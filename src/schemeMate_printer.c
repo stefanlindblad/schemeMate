@@ -94,8 +94,8 @@ void warn(char *message, char *file, int line)
 	fprintf(stdout, "%s:%d: %s\n", file, line, message);
 }
 
-void error(char *message, char *file, int line)
+void error(char *message, char *file, int line, int exit_code)
 {
     fprintf(stdout, "%s:%d: %s\n", file, line, message);
-    abort();
+    exit(exit_code);
 }

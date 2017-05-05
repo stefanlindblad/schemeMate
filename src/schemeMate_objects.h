@@ -11,6 +11,9 @@ typedef enum sm_tag_type sm_tag;
 typedef int sm_char;
 typedef int sm_bool;
 typedef sm_obj (*sm_func)();
+typedef void (*void_func)();
+typedef void* (*void_ptr_func)();
+typedef void_ptr_func (*void_ptr_func_func)();
 typedef struct sm_entry_struct* sm_entry;
 typedef struct sm_env_struct* sm_env;
 typedef enum { false, true } bool;
@@ -19,7 +22,8 @@ typedef enum { false, true } bool;
 #define PRINT(msg) print(msg)
 #define PRINT_LINE(msg) print_line(msg)
 #define WARN(msg) warn(msg, __FILE__, __LINE__)
-#define ERROR(msg) error(msg, __FILE__, __LINE__)
+#define ERROR(msg) error(msg, __FILE__, __LINE__, 666)
+#define ERROR_CODE(msg, code) error(msg, __FILE__, __LINE__, code)
 
 #define ASSERT(cond, msg) ASSERT2(cond, msg, __FILE__, __LINE__)
 
@@ -91,6 +95,7 @@ struct sm_any_type {
 struct sm_sys_func_type {
 	sm_tag tag;
 	sm_func code;
+	char *name;
 };
 
 struct sm_user_func_type {
@@ -102,6 +107,7 @@ struct sm_user_func_type {
 struct sm_sys_syntax_type {
 	sm_tag tag;
 	sm_func code;
+	char *name;
 };
 
 struct sm_entry_struct {

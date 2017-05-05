@@ -37,6 +37,7 @@ void init_evaluation();
 void sm_eval_intern(sm_obj o);
 sm_obj sm_eval(sm_obj o);
 sm_obj sm_eval_list(sm_obj o);
+void register_system_function(char* name, void_func callable);
 static void internal_plus(int argc);
 
 #endif // EVAL_HEADER

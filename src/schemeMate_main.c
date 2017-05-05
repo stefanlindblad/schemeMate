@@ -18,10 +18,8 @@ static void repl()
 		PRINT(">>> ");
 		expr = sm_read(INPUT);
 		result = sm_eval(expr);
-		if (get_tag(expr) != TAG_VOID) {
-			sm_print(stdout, expr);
-			PRINT("\n");
-		}
+		sm_print(stdout, result);
+		PRINT("\n");
 	}
 }
 
@@ -29,8 +27,8 @@ int main(int argc, char *argv[])
 {
 	init_system();
 	init_memory();
-	init_evaluation();
 	init_environment();
+	init_evaluation();
 	sm_selftest();
 	PRINT_LINE("Welcome to schemeMate [0.1]");
 	repl();

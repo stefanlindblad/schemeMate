@@ -5,6 +5,9 @@ void init_evaluation()
     evalStackBottom = (sm_obj*) malloc(sizeof(sm_obj) * INIT_EVALUATION_STACK_SIZE);
     evalStackPointer = evalStackBottom;
     evalStackTop = &(evalStackBottom[INIT_EVALUATION_STACK_SIZE]);
+
+	// Builtin Functions
+	register_system_function("+", internal_plus);
 }
 
 void sm_eval_intern(sm_obj o) 
@@ -61,6 +64,15 @@ sm_obj sm_eval_list(sm_obj o)
 	default:
 	    ERROR("Could not retrieve system function.");
     }
+}
+
+void register_system_function(char* name, void_func callable)
+{
+    sm_obj function = new_sys_func(callable, name);
+    PUSH(function);
+    sm_obj key = new_symbol(name);
+    function = POP();
+    add_binding(key, function, MAIN_ENV);
 }
 
 static void internal_plus(int argc)
