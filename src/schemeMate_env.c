@@ -11,15 +11,15 @@ sm_env allocate_env(unsigned env_size)
 {
 	unsigned bytes;
 	sm_env env;
-	struct sm_entry *entries;
+	sm_entry entries;
 
 	// allocate memory for the entries
-	bytes = (unsigned) sizeof(struct sm_entry);
-	entries = (struct sm_entry*) malloc(bytes);
-	memset(entries, 0, bytes); // fills the entries with 000..
+	bytes = env_size * (unsigned) sizeof(struct sm_entry_struct);
+	entries = (sm_entry) malloc(bytes);
+	memset(entries, 0, bytes);
 
 	// allocate the environment
-	env = (struct sm_environment*) malloc(sizeof(struct sm_environment));
+	env = (sm_env) malloc(sizeof(struct sm_env_struct));
 	env->parent = NULL;
 	env->used_slots = 0;
 	env->allocated_slots = env_size;
@@ -67,7 +67,7 @@ void add_binding(sm_obj key, sm_obj value, sm_env env)
 {
     int hash_id = (int) (object_hash(key) % env->allocated_slots);
 	int original_id = hash_id;
-	struct sm_entry *entry; 
+	sm_entry entry;
 
     while (true) {
 		entry = &(env->entries[hash_id]);
@@ -97,7 +97,7 @@ sm_obj get_binding(sm_obj key, sm_env env)
 
 	int hash_id;
 	int original_id;
-	struct sm_entry *entry; 
+	sm_entry entry;
 
     while (true) {
 		hash_id = (int) ( object_hash(key) % env->allocated_slots );

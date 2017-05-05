@@ -129,5 +129,5 @@ void sm_selftest()
     rslt = get_binding(new_symbol("c"), MAIN_ENV);
     ASSERT(rslt == NULL, "get_binding does not work as expected");
 
-    fprintf(stderr, "Successfully finished the Interpreter Selftest.\n");
+    PRINT("Successfully finished the Interpreter Selftest.");
 }

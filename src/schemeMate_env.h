@@ -5,9 +5,9 @@
 
 #define ENV_INIT_SIZE 10
 
-static inline unsigned object_hash(sm_obj o)
+static inline unsigned long object_hash(sm_obj o)
 {
-    return (unsigned) o;
+    return (unsigned long) o;
 }
 
 void init_environment();

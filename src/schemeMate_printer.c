@@ -79,8 +79,23 @@ void sm_printRest(FILE* file, sm_obj cons)
     sm_printRest(file, cdr(cons));
 }
 
-void error(char *file, int line, char *message)
+void print(char *message)
 {
-    fprintf(stderr, "%s[%d]: %s\n", file, line, message);
+	fprintf(stdout, "%s", message);
+}
+
+void print_line(char *message)
+{
+	fprintf(stdout, "%s\n", message);
+}
+
+void warn(char *message, char *file, int line)
+{
+	fprintf(stdout, "%s:%d: %s\n", file, line, message);
+}
+
+void error(char *message, char *file, int line)
+{
+    fprintf(stdout, "%s:%d: %s\n", file, line, message);
     abort();
 }

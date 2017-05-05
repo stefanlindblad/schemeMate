@@ -12,7 +12,7 @@ void sm_eval_intern(sm_obj o)
     sm_obj obj;
     switch (get_tag(o)) {
 		case TAG_SYMBOL:
-	    	obj = get_binding(o);
+			obj = get_binding(o, MAIN_ENV);
 	    	if (obj == NULL) 
 		 		ERROR("Could not find a binding");
 	    	PUSH(obj);
@@ -31,8 +31,8 @@ void sm_eval_intern(sm_obj o)
 
 sm_obj sm_eval(sm_obj o)
 {
-    sm_eval_intern(o);
-    return POP();
+	sm_eval_intern(o);
+	return POP();
 }
 
 sm_obj sm_eval_list(sm_obj o) 

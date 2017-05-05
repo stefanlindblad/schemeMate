@@ -11,11 +11,14 @@ typedef enum sm_tag_type sm_tag;
 typedef int sm_char;
 typedef int sm_bool;
 typedef sm_obj (*sm_func)();
-typedef struct sm_environment* sm_env;
+typedef struct sm_entry_struct* sm_entry;
+typedef struct sm_env_struct* sm_env;
 typedef enum { false, true } bool;
 
-// Error reporting
-
+// printing shortcuts
+#define PRINT(msg) print(msg)
+#define PRINT_LINE(msg) print_line(msg)
+#define WARN(msg) warn(msg, __FILE__, __LINE__)
 #define ERROR(msg) error(msg, __FILE__, __LINE__)
 
 #define ASSERT(cond, msg) ASSERT2(cond, msg, __FILE__, __LINE__)
@@ -101,16 +104,16 @@ struct sm_sys_syntax_type {
 	sm_func code;
 };
 
-struct sm_entry {
+struct sm_entry_struct {
     sm_obj key;
     sm_obj value;
 };
 
-struct sm_environment {
+struct sm_env_struct {
     struct sm_environment *parent;
     unsigned int used_slots;
     unsigned int allocated_slots;
-    struct sm_entry *entries;
+    struct sm_entry_struct *entries;
 };
 
 union sm_object {

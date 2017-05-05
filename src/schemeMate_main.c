@@ -15,12 +15,12 @@ static void repl()
 	sm_obj result;
 
 	while (true) {
-		fprintf(stdout, ">>> ");
+		PRINT(">>> ");
 		expr = sm_read(INPUT);
 		result = sm_eval(expr);
 		if (get_tag(expr) != TAG_VOID) {
 			sm_print(stdout, expr);
-	    	fprintf(stdout, "\n");
+			PRINT("\n");
 		}
 	}
 }
@@ -29,11 +29,10 @@ int main(int argc, char *argv[])
 {
 	init_system();
 	init_memory();
-	init_environment();
 	init_evaluation();
-	printf("Welcome to schemeMate [0.1]\n");
-	if (argc > 1 && strcmp(argv[1], "--selftest") != 0)
-		sm_selftest();
+	init_environment();
+	sm_selftest();
+	PRINT_LINE("Welcome to schemeMate [0.1]");
 	repl();
 	exit(0);
 }
