@@ -55,7 +55,7 @@ void grow_env(sm_env oldEnv)
 				newId = (newId + 1) % newSize;
 
 				if (startId == newId)
-		    		ERROR("Happened to do round trip in growing environment");
+					ERROR_CODE("Happened to do round trip in growing environment", 43);
 	    		}
 			}
     	}
@@ -87,7 +87,7 @@ void add_binding(sm_obj key, sm_obj value, sm_env env)
 		hash_id = (hash_id + 1) % env->allocated_slots;
 
 		if (hash_id == original_id)
-	    	ERROR("Happened to do round trip in add binding");
+			ERROR_CODE("Happened to do round trip in add binding", 43);
     }
 }
 
@@ -116,7 +116,7 @@ sm_obj get_binding(sm_obj key, sm_env env)
 	    	}
 	    	hash_id = (hash_id+1) % env->allocated_slots;
 	    	if (hash_id == original_id)
-				ERROR("Happened to do round trip in get binding");
+				ERROR_CODE("Happened to do round trip in get binding", 43);
 		}
     }
 }

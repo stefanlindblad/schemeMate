@@ -29,9 +29,7 @@ typedef enum { false, true } bool;
 
 #define ASSERT2(cond, msg, fileName, lineNr) \
 	if (! (cond)) { \
-		fprintf(stderr, "[%s:%d] assertion failed: %s", \
-			fileName, lineNr, msg); \
-		abort(); \
+		error(msg, fileName, lineNr, 42); \
 	}
 
 #define ASSERT_SYMBOL(obj) \
@@ -197,6 +195,10 @@ static inline char* symbol_val(sm_obj obj) {
 
 static inline char* string_val(sm_obj obj) {
     ASSERT(is_string(obj), "string_val() function expects a string object.");
+    return (obj->sm_symbol.chars);
+}
+
+static inline char* raw_val(sm_obj obj) {
     return (obj->sm_symbol.chars);
 }
 

@@ -190,7 +190,7 @@ static void remember_symbol(sm_obj obj)
 		if (hash_id == symbolTableSize)
 	    	hash_id = 0;
 		if (hash_id == original_id)
-	    	ERROR("The symbol table is full.");
+			ERROR_CODE("The symbol table is full.", 49);
     }
 
 	if (numKnownSymbols == symbolTableSize) {
@@ -228,7 +228,7 @@ static void grow_symbol_table()
 				if (hash_id == newSize)
 		    		hash_id = 0;
 				if (hash_id == original_id)
-				    ERROR("The new symbol table is full.");
+					ERROR_CODE("The new symbol table is full.", 49);
 	    	}
 		}
     }

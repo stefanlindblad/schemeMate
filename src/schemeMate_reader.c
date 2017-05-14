@@ -1,20 +1,20 @@
 #include "schemeMate_reader.h"
 
-static void alloc_buffer(buffer *b, int initSize)
+void alloc_buffer(buffer *b, int initSize)
 {
     b->memory = malloc(initSize);
     b->size = initSize;
     b->filled = 0;
 }
 
-static void grow_buffer(buffer *b)
+void grow_buffer(buffer *b)
 {
     int newSize = b->size * 2;
     b->memory = realloc(b->memory, newSize);
     b->size = newSize;
 }
 
-static void put_buffer(buffer *b, sm_char ch)
+void put_buffer(buffer *b, sm_char ch)
 {
     if ((b->filled+1) == b->size) {
 		grow_buffer(b);
@@ -32,19 +32,20 @@ long long a2l(char* cp)
 	return val;
 }
 
-static sm_char skipSeparators(sm_stream inStream)
+sm_char skipSeparators(sm_stream inStream, bool oneLineMode)
 {
 	sm_char nextChar;
 	do {
 		nextChar = readCharacter(inStream);
-		if (nextChar == EOF_CHAR) {
+		if (nextChar == EOF_CHAR)
 			return EOF_CHAR;
-		}
+		if (oneLineMode && nextChar == NEW_LINE)
+			return EOF_CHAR;
 	} while (isSeparator(nextChar));
 	return nextChar;
 }
 
-static sm_bool isSeparator(sm_char c)
+sm_bool isSeparator(sm_char c)
 {
 	switch (c)
 	{
@@ -58,7 +59,7 @@ static sm_bool isSeparator(sm_char c)
 	}
 }
 
-static sm_bool all_digits(char* cp)
+sm_bool all_digits(char* cp)
 {
 	char c;
 
@@ -72,7 +73,7 @@ static sm_bool all_digits(char* cp)
     return 1;
 }
 
-static sm_char readCharacter(sm_stream inStream)
+sm_char readCharacter(sm_stream inStream)
 {
 	switch (inStream->type)
 	{
@@ -100,14 +101,14 @@ static sm_char readCharacter(sm_stream inStream)
 			return nextChar;
 		}
 		default:
-			ERROR("UNKOWN STREAM TYPE!");
+			ERROR_CODE("UNKOWN STREAM TYPE!", 51);
 
 		// Should not end here, pure compiler satisfaction
 		return 0;
 	}
 }
 
-static void unreadCharacter(sm_stream inStream, sm_char char_to_unread)
+void unreadCharacter(sm_stream inStream, sm_char char_to_unread)
 {
 	switch (inStream->type)
 	{
@@ -123,18 +124,18 @@ static void unreadCharacter(sm_stream inStream, sm_char char_to_unread)
 			return;
 		}
 	default:
-		ERROR("UNKOWN STREAM TYPE!");
+		ERROR_CODE("UNKOWN STREAM TYPE!", 51);
 	}
 }
 
-static sm_obj sm_readList(sm_stream inStream)
+sm_obj sm_readList(sm_stream inStream, bool oneLineMode)
 {
 	sm_char nextChar;
 	sm_obj car;
 	sm_obj cdr;
-	nextChar = skipSeparators(inStream);
+	nextChar = skipSeparators(inStream, oneLineMode);
 	if (nextChar == EOF_CHAR) {
-		ERROR("Opening bracket ( is missing closing bracket )!");
+		ERROR_CODE("Opening bracket ( is missing closing bracket )!", 50);
 		return sm_eof();
 	}
 	if (nextChar == ')')
@@ -142,8 +143,8 @@ static sm_obj sm_readList(sm_stream inStream)
 		return sm_nil();
 	}
 	unreadCharacter(inStream, nextChar);
-	car = sm_read(inStream);
-	cdr = sm_readList(inStream);
+	car = sm_read(inStream, oneLineMode);
+	cdr = sm_readList(inStream, oneLineMode);
 	return new_cons(car, cdr);
 }
 
@@ -157,7 +158,7 @@ sm_obj sm_readString(sm_stream inStream)
 		nextChar = readCharacter(inStream);
 
 		if (nextChar == EOF_CHAR) {
-			ERROR("Unterminated String!");
+			ERROR_CODE("Unterminated String!", 52);
 			return sm_eof();
 		}
 		if (nextChar == '"') {
@@ -180,24 +181,25 @@ sm_obj sm_readString(sm_stream inStream)
     }
 }
 
-sm_obj sm_readCString(char* input) {
-    return sm_read(new_string_stream(input));
+sm_obj sm_readCString(char* input)
+{
+    return sm_read(new_string_stream(input), false);
 }
 
-sm_obj sm_read(sm_stream inStream)
+sm_obj sm_read(sm_stream inStream, bool oneLineMode)
 {
 	buffer b;
     sm_char nextChar;
     char *input;
     alloc_buffer(&b, INIT_BUFFER_SIZE);
-    nextChar = skipSeparators(inStream);
+    nextChar = skipSeparators(inStream, oneLineMode);
     if (nextChar == EOF_CHAR) {
 		return sm_eof();
     }
     if (nextChar == '(') {
-		sm_obj result = sm_readList(inStream);
+		sm_obj result = sm_readList(inStream, oneLineMode);
 		if (result->sm_any.tag == TAG_EOF) {
-			ERROR("Opening bracket ( is missing closing bracket )!");
+			ERROR_CODE("Opening bracket ( is missing closing bracket )!", 50);
 			return sm_eof();
 		}
 		return result;
@@ -207,7 +209,7 @@ sm_obj sm_read(sm_stream inStream)
     }
     if (nextChar == '\'') {
 		sm_obj quotedExpr;
-		quotedExpr = sm_read(inStream);
+		quotedExpr = sm_read(inStream, oneLineMode);
 		return new_cons(new_symbol("quote"), new_cons(quotedExpr, sm_nil()));
     }
 

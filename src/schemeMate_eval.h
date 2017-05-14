@@ -16,13 +16,13 @@ static inline void PUSH(sm_obj o)
 {
     *evalStackPointer++ = o;
     if (evalStackPointer >= evalStackTop) 
-		ERROR("Evaluation Stack Overflow!");
+		ERROR_CODE("Evaluation Stack Overflow!", 47);
 }
 
 static inline sm_obj POP()
 {
     if (evalStackPointer <= evalStackBottom) 
-		ERROR("Evaluation Stack Underflow!");
+		ERROR_CODE("Evaluation Stack Underflow!", 48);
     return *--evalStackPointer;
 }
 
@@ -30,7 +30,7 @@ static inline void DROP(int amount)
 {
     evalStackPointer -= amount;
     if (evalStackPointer < evalStackBottom)
-		ERROR("Evaluation Stack Underflow!");
+		ERROR_CODE("Evaluation Stack Underflow!", 48);
 }
 
 void init_evaluation();
@@ -39,5 +39,6 @@ sm_obj sm_eval(sm_obj o);
 sm_obj sm_eval_list(sm_obj o);
 void register_system_function(char* name, void_func callable);
 static void internal_plus(int argc);
+static void internal_minus(int argc);
 
 #endif // EVAL_HEADER

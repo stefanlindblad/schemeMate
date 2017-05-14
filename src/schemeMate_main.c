@@ -1,6 +1,6 @@
 #include "schemeMate_main.h"
 
-static void init_system() {
+void init_system() {
     INPUT = new_file_stream(stdin);
     SM_NIL = sm_nil();
     SM_TRUE = sm_true();
@@ -9,16 +9,16 @@ static void init_system() {
     SM_EOF = sm_eof();
 }
 
-static void repl()
+void repl()
 {
 	sm_obj expr;
 	sm_obj result;
 
 	while (true) {
 		PRINT(">>> ");
-		expr = sm_read(INPUT);
+		expr = sm_read(INPUT, true);
 		result = sm_eval(expr);
-		sm_print(stdout, result);
+		sm_print(stdout, result, true);
 		PRINT("\n");
 	}
 }
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 	init_environment();
 	init_evaluation();
 	sm_selftest();
-	PRINT_LINE("Welcome to schemeMate [0.1]");
+	PRINT_LINE("Welcome to schemeMate [0.2]");
 	repl();
 	exit(0);
 }

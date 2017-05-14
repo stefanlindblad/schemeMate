@@ -1,0 +1,15 @@
+error codes used in the schememate Interpreter:
+
+code 42: assert - the interpreter forced a condition that was not met. see error message.
+code 43: roundtrip - the interpreter could not access a given environment /  correctly.
+code 44: unknown variable - the given variable was not found.
+code 45: number of arguments - a function was called with the wrong number of arguments.
+code 46: NaN error - a number was expected but the given value is not a number.
+code 47: stack overflow - tried to access stack adresses that are bigger then his adress space.
+code 48: stack underflow - tried to access stack adresses that are smaller then his adress space.
+code 49: symbol table full - the symbol table did not have the memory to store a symbol.
+code 50: syntax error - the given scheme code has missing brackets or other misformed syntax.
+code 51: unkown stream type - schemeMate supports string and file streams to read form.
+code 52: non-terminated string - the given string to interprete is not terminated correctly.
+code 53: unkown function - the function you tried to call was unkown to the interpreter.
+code 666: unkown error code - a problem occured but it was not possible to retrieve a valid error code.

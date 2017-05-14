@@ -8,6 +8,7 @@ void init_evaluation()
 
 	// Builtin Functions
 	register_system_function("+", internal_plus);
+	register_system_function("-", internal_minus);
 }
 
 void sm_eval_intern(sm_obj o) 
@@ -16,8 +17,8 @@ void sm_eval_intern(sm_obj o)
     switch (get_tag(o)) {
 		case TAG_SYMBOL:
 			obj = get_binding(o, MAIN_ENV);
-	    	if (obj == NULL) 
-		 		ERROR("Could not find a binding");
+			if (obj == NULL)
+				ERROR_CODE("Unknown variable given.", 44);
 	    	PUSH(obj);
 	    	return;
 		case TAG_CONS:
@@ -62,7 +63,7 @@ sm_obj sm_eval_list(sm_obj o)
 	    return;
 
 	default:
-	    ERROR("Could not retrieve system function.");
+	    ERROR_CODE("Unknown function reference.", 53);
     }
 }
 
@@ -79,12 +80,52 @@ static void internal_plus(int argc)
 {
 	int sum = 0;
  
-	while(--argc >= 0) {
+	if (argc < 1)
+		ERROR_CODE("+ function expects at least 1 arguments", 45);
+
+	while (--argc >= 0) {
 		sm_obj next_value = POP();
 		if(is_int(next_value))
 			sum = sum + int_val(next_value);
 		else
-			ERROR("Argument to + is NaN");
+			ERROR_CODE("+ function works on numbers, received NaN.", 46);
 	}
 	PUSH(new_int(sum));
+}
+
+static void internal_minus(int argc)
+{
+	int result = 0;
+
+	if (argc < 1)
+		ERROR_CODE("- function expects at least 1 arguments", 45);
+
+	sm_obj next_value = POP();
+	if (is_int(next_value))
+		result = - int_val(next_value);
+	else
+		ERROR_CODE("- function works on numbers, received NaN.", 46);
+
+	if (argc == 1) {
+		PUSH(new_int(result));
+		return;
+	}
+
+	while (--argc > 1) {
+	next_value = POP();
+
+	if (is_int(next_value))
+	    result = result - int_val(next_value);
+	else
+	    ERROR_CODE("- function works on numbers, received NaN.", 46);
+	}
+
+
+    next_value = POP();
+    if (is_int(next_value))
+		result = result + int_val(next_value);
+    else
+		ERROR_CODE("- function works on numbers, received NaN.", 46);
+
+	PUSH(new_int(result));
 }
