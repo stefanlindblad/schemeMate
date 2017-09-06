@@ -7,9 +7,6 @@ void sm_print(FILE* file, sm_obj o, bool oneLineMode)
 	case TAG_INT:
 		fprintf(file, "%ld", int_val(o));
 		break;
-	case TAG_FLOAT:
-		fprintf(file, "%lf", float_val(o));
-		break;
 	case TAG_NIL:
 		fprintf(file, "()");
 		break;
@@ -32,9 +29,6 @@ void sm_print(FILE* file, sm_obj o, bool oneLineMode)
 		if (oneLineMode)
 			return;
 		fprintf(file, "#eof");
-		break;
-	case TAG_OBJ:
-		fprintf(file, "%f", float_val(o));
 		break;
 	case TAG_VOID:
 		fprintf(file, "#void");

@@ -40,7 +40,6 @@ typedef enum { false, true } bool;
 enum sm_tag_type
 {
 	TAG_INT = 0,
-	TAG_FLOAT,
 	TAG_NIL,
 	TAG_FALSE,
 	TAG_TRUE,
@@ -48,7 +47,6 @@ enum sm_tag_type
 	TAG_STRING,
 	TAG_CONS,
 	TAG_EOF,
-	TAG_OBJ,
 	TAG_VOID,
 	TAG_SYS_FUNC,
 	TAG_SYS_SYNTAX,
@@ -59,11 +57,6 @@ enum sm_tag_type
 struct sm_int_type {
 	sm_tag tag;
 	long iVal;
-};
-
-struct sm_float_type {
-	sm_tag tag;
-	double fVal;
 };
 
 struct sm_special_type {
@@ -123,7 +116,6 @@ struct sm_env_struct {
 union sm_object {
 	struct sm_any_type sm_any;
 	struct sm_int_type sm_int;
-	struct sm_float_type sm_float;
 	struct sm_special_type sm_special;
 	struct sm_symbol_type sm_symbol;
 	struct sm_string_type sm_string;
@@ -150,16 +142,6 @@ static inline sm_bool is_int(sm_obj obj) {
     return has_tag(obj, TAG_INT);
 }
 
-static inline sm_bool is_float(sm_obj obj) {
-    return has_tag(obj, TAG_FLOAT);
-}
-
-static inline double to_float(sm_obj obj)
-{
-	ASSERT(is_float(obj), "to_float() function expects a float object.");
-	return obj->sm_float.fVal;
-}
-
 static inline sm_bool is_nil(sm_obj obj) {
     return has_tag(obj, TAG_NIL);
 }
@@ -181,11 +163,6 @@ static inline sm_bool is_cons(sm_obj obj) {
 static inline long int_val(sm_obj obj) {
     ASSERT(is_int(obj), "int_val() function expects an integer object.");
     return (obj->sm_int.iVal);
-}
-
-static inline double float_val(sm_obj obj) {
-    ASSERT(is_float(obj), "float_val() function expects a float object.");
-    return (obj->sm_float.fVal);
 }
 
 static inline char* symbol_val(sm_obj obj) {

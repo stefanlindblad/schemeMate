@@ -167,21 +167,21 @@ static void internal_div(int argc)
 			return;
 		}
 		else
-			ERROR_CODE("/ function works only on integers currently.", 46);
+			ERROR_CODE("/ function works only on numbers currently.", 46);
 	}
 
 	sm_obj counter = GET_N(argc);
 	if (is_int(counter))
 		result = int_val(counter);
 	else
-		ERROR_CODE("/ function works only on integers currently.", 46);
+		ERROR_CODE("/ function works only on numbers currently.", 46);
 
 	for (; i < argc; i++) {
 		sm_obj denominator = GET_N(i);
 		if (is_int(denominator))
 			result =  result / int_val(denominator);
 		else
-			ERROR_CODE("/ function works only on integers currently.", 46);
+			ERROR_CODE("/ function works only on numbers currently.", 46);
 	}
 
 	PUSH(new_int(result));

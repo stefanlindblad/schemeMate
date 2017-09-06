@@ -32,7 +32,7 @@ static inline sm_obj GET_N(int n)
 {
     if (evalStackPointer <= evalStackBottom)
 		  ERROR_CODE("Evaluation Stack Underflow!", 48);
-    return *(evalStackPointer-e);
+    return *(evalStackPointer-n);
 }
 
 static inline void DROP(int amount)
