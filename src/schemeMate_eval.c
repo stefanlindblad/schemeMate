@@ -9,6 +9,8 @@ void init_evaluation()
 	// Builtin Functions
 	register_system_function("+", internal_plus);
 	register_system_function("-", internal_minus);
+	register_system_function("*", internal_mult);
+	register_system_function("/", internal_div);
 }
 
 void sm_eval_intern(sm_obj o) 
@@ -126,6 +128,61 @@ static void internal_minus(int argc)
 		result = result + int_val(next_value);
     else
 		ERROR_CODE("- function works on numbers, received NaN.", 46);
+
+	PUSH(new_int(result));
+}
+
+// WIP
+static void internal_mult(int argc)
+{
+	int result = 1;
+
+	if (argc < 1)
+		ERROR_CODE("* function expects at least 1 argument.", 45);
+
+	while (--argc >= 0) {
+		sm_obj next_value = POP();
+		if (is_int(next_value))
+			result = result * int_val(next_value);
+		else
+			ERROR_CODE("* function works on numbers, received NaN.", 46);
+	}
+
+	PUSH(new_int(result));
+}
+
+static void internal_div(int argc)
+{
+	int result = 0;
+	int i = 1;
+
+	if (argc < 1)
+		ERROR_CODE("/ function expects at least 1 argument.", 45);
+
+	if (argc == 1) {
+		sm_obj value = POP();
+		if (is_int(value)) {
+			result = 1 / int_val(value);
+			PUSH(new_int(result));
+			return;
+		}
+		else
+			ERROR_CODE("/ function works only on integers currently.", 46);
+	}
+
+	sm_obj counter = GET_N(argc);
+	if (is_int(counter))
+		result = int_val(counter);
+	else
+		ERROR_CODE("/ function works only on integers currently.", 46);
+
+	for (; i < argc; i++) {
+		sm_obj denominator = GET_N(i);
+		if (is_int(denominator))
+			result =  result / int_val(denominator);
+		else
+			ERROR_CODE("/ function works only on integers currently.", 46);
+	}
 
 	PUSH(new_int(result));
 }

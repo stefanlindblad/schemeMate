@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	init_memory();
 	init_environment();
 	init_evaluation();
-	sm_selftest();
+	//sm_selftest();
 	PRINT_LINE("Welcome to schemeMate [0.2]");
 	repl();
 	exit(0);
