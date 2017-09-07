@@ -28,10 +28,10 @@ Types:
 * symbols
 
 Implemented math functions:  
-* + - Addition
-* - - Substraction
-* * - Multiplikation
-* / - Division
+* "+" - Addition
+* "-" - Substraction
+* "*" - Multiplikation
+* "/" - Division
 * max - Maximum
 * min - Minimum
 * magnitude - Absolute Value
