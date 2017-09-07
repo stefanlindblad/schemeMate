@@ -1,16 +1,29 @@
 #include "schemeMate_eval.h"
 
+sm_stack MAIN_STACK = NULL;
+
 void init_evaluation()
 {
-    evalStackBottom = (sm_obj*) malloc(sizeof(sm_obj) * INIT_EVALUATION_STACK_SIZE);
-    evalStackPointer = evalStackBottom;
-    evalStackTop = &(evalStackBottom[INIT_EVALUATION_STACK_SIZE]);
+	MAIN_STACK = allocate_stack();
+}
 
-	// Builtin Functions
-	register_system_function("+", internal_plus);
-	register_system_function("-", internal_minus);
-	register_system_function("*", internal_mult);
-	register_system_function("/", internal_div);
+sm_stack allocate_stack()
+{
+	unsigned bytes;
+	sm_stack stack;
+	sm_stack_entry entries;
+
+	// allocate memory for the entries
+	bytes = INIT_EVALUATION_STACK_SIZE * (unsigned) sizeof(struct sm_stack_entry_struct);
+	entries = (sm_stack_entry) malloc(bytes);
+	memset(entries, 0, bytes);
+
+	// allocate the stack
+	stack = (sm_stack) malloc(sizeof(struct sm_stack_struct));
+	stack->evalStackBottom = entries;
+    stack->evalStackPointer = stack->evalStackBottom;
+    stack->evalStackTop = &(stack->evalStackBottom[INIT_EVALUATION_STACK_SIZE]);
+	return stack;
 }
 
 void sm_eval_intern(sm_obj o) 
@@ -21,7 +34,7 @@ void sm_eval_intern(sm_obj o)
 			obj = get_binding(o, MAIN_ENV);
 			if (obj == NULL)
 				ERROR_CODE("Unknown variable given.", 44);
-	    	PUSH(obj);
+			PUSH(obj, MAIN_STACK);
 	    	return;
 		case TAG_CONS:
 	    	callDepth++;
@@ -29,16 +42,16 @@ void sm_eval_intern(sm_obj o)
 	    	callDepth--;
 	    	return;
 		default:
-	    	PUSH(o);
+			PUSH(o, MAIN_STACK);
 	    	return;
     }
-	return POP();
+	return POP(MAIN_STACK);
 }
 
 sm_obj sm_eval(sm_obj o)
 {
 	sm_eval_intern(o);
-	return POP();
+	return POP(MAIN_STACK);
 }
 
 sm_obj sm_eval_list(sm_obj o) 
@@ -54,7 +67,7 @@ sm_obj sm_eval_list(sm_obj o)
 		while (!is_nil(args)) {
 		    sm_obj nextArg = car(args);
 		    args = cdr(args);
-		    PUSH(sm_eval(nextArg));
+		    PUSH(sm_eval(nextArg), MAIN_STACK);
 		    argc++;
 		}
 		(*obj->sm_sys_func.code)(argc);
@@ -72,117 +85,8 @@ sm_obj sm_eval_list(sm_obj o)
 void register_system_function(char* name, void_func callable)
 {
     sm_obj function = new_sys_func(callable, name);
-    PUSH(function);
+    PUSH(function, MAIN_STACK);
     sm_obj key = new_symbol(name);
-    function = POP();
-    add_binding(key, function, MAIN_ENV);
-}
-
-static void internal_plus(int argc)
-{
-	int sum = 0;
- 
-	if (argc < 1)
-		ERROR_CODE("+ function expects at least 1 arguments", 45);
-
-	while (--argc >= 0) {
-		sm_obj next_value = POP();
-		if(is_int(next_value))
-			sum = sum + int_val(next_value);
-		else
-			ERROR_CODE("+ function works on numbers, received NaN.", 46);
-	}
-	PUSH(new_int(sum));
-}
-
-static void internal_minus(int argc)
-{
-	int result = 0;
-
-	if (argc < 1)
-		ERROR_CODE("- function expects at least 1 arguments", 45);
-
-	sm_obj next_value = POP();
-	if (is_int(next_value))
-		result = - int_val(next_value);
-	else
-		ERROR_CODE("- function works on numbers, received NaN.", 46);
-
-	if (argc == 1) {
-		PUSH(new_int(result));
-		return;
-	}
-
-	while (--argc > 1) {
-	next_value = POP();
-
-	if (is_int(next_value))
-	    result = result - int_val(next_value);
-	else
-	    ERROR_CODE("- function works on numbers, received NaN.", 46);
-	}
-
-
-    next_value = POP();
-    if (is_int(next_value))
-		result = result + int_val(next_value);
-    else
-		ERROR_CODE("- function works on numbers, received NaN.", 46);
-
-	PUSH(new_int(result));
-}
-
-// WIP
-static void internal_mult(int argc)
-{
-	int result = 1;
-
-	if (argc < 1)
-		ERROR_CODE("* function expects at least 1 argument.", 45);
-
-	while (--argc >= 0) {
-		sm_obj next_value = POP();
-		if (is_int(next_value))
-			result = result * int_val(next_value);
-		else
-			ERROR_CODE("* function works on numbers, received NaN.", 46);
-	}
-
-	PUSH(new_int(result));
-}
-
-static void internal_div(int argc)
-{
-	int result = 0;
-	int i = 1;
-
-	if (argc < 1)
-		ERROR_CODE("/ function expects at least 1 argument.", 45);
-
-	if (argc == 1) {
-		sm_obj value = POP();
-		if (is_int(value)) {
-			result = 1 / int_val(value);
-			PUSH(new_int(result));
-			return;
-		}
-		else
-			ERROR_CODE("/ function works only on numbers currently.", 46);
-	}
-
-	sm_obj counter = GET_N(argc);
-	if (is_int(counter))
-		result = int_val(counter);
-	else
-		ERROR_CODE("/ function works only on numbers currently.", 46);
-
-	for (; i < argc; i++) {
-		sm_obj denominator = GET_N(i);
-		if (is_int(denominator))
-			result =  result / int_val(denominator);
-		else
-			ERROR_CODE("/ function works only on numbers currently.", 46);
-	}
-
-	PUSH(new_int(result));
+    function = POP(MAIN_STACK);
+    add_binding(key, function, &MAIN_ENV);
 }

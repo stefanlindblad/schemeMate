@@ -15,7 +15,9 @@ typedef void (*void_func)();
 typedef void* (*void_ptr_func)();
 typedef void_ptr_func (*void_ptr_func_func)();
 typedef struct sm_entry_struct* sm_entry;
+typedef struct sm_stack_entry_struct* sm_stack_entry;
 typedef struct sm_env_struct* sm_env;
+typedef struct sm_stack_struct* sm_stack;
 typedef enum { false, true } bool;
 
 // printing shortcuts
@@ -106,11 +108,21 @@ struct sm_entry_struct {
     sm_obj value;
 };
 
+struct sm_stack_entry_struct {
+    sm_obj entry;
+};
+
 struct sm_env_struct {
     struct sm_environment *parent;
     unsigned int used_slots;
     unsigned int allocated_slots;
     struct sm_entry_struct *entries;
+};
+
+struct sm_stack_struct {
+	struct sm_stack_entry_struct *evalStackBottom;
+	struct sm_stack_entry_struct *evalStackPointer;
+	struct sm_stack_entry_struct *evalStackTop;
 };
 
 union sm_object {
@@ -127,6 +139,7 @@ union sm_object {
 
 // program wide data
 extern sm_env MAIN_ENV;
+extern sm_stack MAIN_STACK;
 
 // Type checks
 

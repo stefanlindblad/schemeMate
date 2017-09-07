@@ -115,8 +115,11 @@ void sm_selftest()
     l3 = car(cdr(l2));
     ASSERT(is_symbol(car(l3)), "read check failed")
 
-    add_binding(new_symbol("a"), new_int(120), MAIN_ENV);
-    add_binding(new_symbol("b"), new_int(200), MAIN_ENV);
+    add_binding(new_symbol("a"), new_int(120), &MAIN_ENV);
+    add_binding(new_symbol("b"), new_int(200), &MAIN_ENV);
+    add_binding(new_symbol("x"), new_string("abc"), &MAIN_ENV);
+    add_binding(new_symbol("y"), new_string("abc"), &MAIN_ENV);
+    add_binding(new_symbol("z"), new_string("cba"), &MAIN_ENV);
 
     rslt = get_binding(new_symbol("a"), MAIN_ENV);
     ASSERT(is_int(rslt), "get_binding does not work as expected");

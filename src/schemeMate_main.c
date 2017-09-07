@@ -13,13 +13,16 @@ void repl()
 {
 	sm_obj expr;
 	sm_obj result;
+	PRINT(">>> ");
 
 	while (true) {
-		PRINT(">>> ");
 		expr = sm_read(INPUT, true);
 		result = sm_eval(expr);
-		sm_print(stdout, result, true);
-		PRINT("\n");
+		if (result != SM_EOF) {
+			sm_print(stdout, result, true);
+			PRINT("\n");
+			PRINT(">>> ");
+		}
 	}
 }
 
@@ -29,7 +32,8 @@ int main(int argc, char *argv[])
 	init_memory();
 	init_environment();
 	init_evaluation();
-	//sm_selftest();
+	init_functions();
+	sm_selftest();
 	PRINT_LINE("Welcome to schemeMate [0.2]");
 	repl();
 	exit(0);

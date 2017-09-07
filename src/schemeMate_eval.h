@@ -6,50 +6,45 @@
 #define INIT_EVALUATION_STACK_SIZE 1024
 
 static int callDepth = 0;
-static sm_obj* evalStackBottom = NULL;
-static sm_obj* evalStackPointer = NULL;
-static sm_obj* evalStackTop = NULL;
 
 // inline functions
 
-static inline void PUSH(sm_obj o)
+static inline void PUSH(sm_obj o, sm_stack s)
 {
-    *evalStackPointer++ = o;
-    if (evalStackPointer >= evalStackTop) 
+    (s->evalStackPointer++)->entry = o;
+    if (s->evalStackPointer >= s->evalStackTop)
 		  ERROR_CODE("Evaluation Stack Overflow!", 47);
 }
 
 // Returns the top element on the stack
-static inline sm_obj POP()
+static inline sm_obj POP(sm_stack s)
 {
-    if (evalStackPointer <= evalStackBottom) 
-		  ERROR_CODE("Evaluation Stack Underflow!", 48);
-    return *--evalStackPointer;
+    if (s->evalStackPointer <= s->evalStackBottom)
+          ERROR_CODE("Evaluation Stack Underflow!", 48);
+    s->evalStackPointer--;
+    return s->evalStackPointer->entry;
 }
 
 // Returns the nTh element down the stack
-static inline sm_obj GET_N(int n)
+static inline sm_obj GET_N(int n, sm_stack s)
 {
-    if (evalStackPointer <= evalStackBottom)
+    if (s->evalStackPointer <= s->evalStackBottom)
 		  ERROR_CODE("Evaluation Stack Underflow!", 48);
-    return *(evalStackPointer-n);
+    return (s->evalStackPointer - n)->entry;
 }
 
-static inline void DROP(int amount)
+static inline void DROP(int amount, sm_stack s)
 {
-    evalStackPointer -= amount;
-    if (evalStackPointer < evalStackBottom)
+    s->evalStackPointer -= amount;
+    if (s->evalStackPointer < s->evalStackBottom)
 		ERROR_CODE("Evaluation Stack Underflow!", 48);
 }
 
 void init_evaluation();
+sm_stack allocate_stack();
 void sm_eval_intern(sm_obj o);
 sm_obj sm_eval(sm_obj o);
 sm_obj sm_eval_list(sm_obj o);
 void register_system_function(char* name, void_func callable);
-static void internal_plus(int argc);
-static void internal_minus(int argc);
-static void internal_mult(int argc);
-static void internal_div(int argc);
 
 #endif // EVAL_HEADER
