@@ -1,6 +1,6 @@
 # schemeMate
 
-schemeMate is a scheme command line interpreter for the [scheme](http://www.scheme.com/tspl4/intro.html#./intro:h1) language written in C. 
+schemeMate is a command line interpreter for the [scheme](http://www.scheme.com/tspl4/intro.html#./intro:h1) language written in C. 
 
 Installation:
 
