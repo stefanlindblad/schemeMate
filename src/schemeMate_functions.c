@@ -23,11 +23,13 @@ void init_functions()
 	register_system_function("or", internal_logical_or);
 	register_system_function("and", internal_logical_and);
 	register_system_function("not", internal_logical_not);
-	//register_system_function("integer?", internal_is_int);
-	//register_system_function("string?", internal_is_string);
-	//register_system_function("zero?", internal_is_zero);
-	//register_system_function("positive?", internal_is_positive);
-	//register_system_function("negative?", internal_is_negative);
+
+	// Register Type Check Functions
+	register_system_function("int?", internal_is_int);
+	register_system_function("string?", internal_is_string);
+	register_system_function("zero?", internal_is_zero);
+	register_system_function("pos?", internal_is_positive);
+	register_system_function("neg?", internal_is_negative);
 }
 
 static void internal_plus(int argc)
@@ -457,5 +459,92 @@ static void internal_logical_not(int argc)
 		return;
 	}
 
+	PUSH(sm_true(), MAIN_STACK);
+}
+
+static void internal_is_int(int argc)
+{
+	if (argc < 1)
+		ERROR_CODE("int? function expects at least 1 argument.", 45);
+
+	while (--argc >= 0) {
+		sm_obj value = POP(MAIN_STACK);
+		if(!is_int(value)) {
+			PUSH(sm_false(), MAIN_STACK);
+			return;
+		}
+	}
+	PUSH(sm_true(), MAIN_STACK);
+}
+
+static void internal_is_string(int argc)
+{
+	if (argc < 1)
+		ERROR_CODE("string? function expects at least 1 argument.", 45);
+
+	while (--argc >= 0) {
+		sm_obj value = POP(MAIN_STACK);
+		if(!is_string(value)) {
+			PUSH(sm_false(), MAIN_STACK);
+			return;
+		}
+	}
+	PUSH(sm_true(), MAIN_STACK);
+}
+
+static void internal_is_zero(int argc)
+{
+	if (argc < 1)
+		ERROR_CODE("zero? function expects at least 1 argument.", 45);
+
+	while (--argc >= 0) {
+		sm_obj value = POP(MAIN_STACK);
+		if(!is_int(value)) {
+			PUSH(sm_false(), MAIN_STACK);
+			return;
+		}
+		else if(int_val(value) != 0) {
+			PUSH(sm_false(), MAIN_STACK);
+			return;
+		}
+	}
+	PUSH(sm_true(), MAIN_STACK);
+}
+
+static void internal_is_positive(int argc)
+{
+	if (argc < 1)
+		ERROR_CODE("positive? function expects at least 1 argument.", 45);
+
+	while (--argc >= 0) {
+		sm_obj value = POP(MAIN_STACK);
+		if(!is_int(value)) {
+			PUSH(sm_false(), MAIN_STACK);
+			return;
+		}
+		else if(int_val(value) <= 0) {
+			PUSH(sm_false(), MAIN_STACK);
+			return;
+		}
+	}
+	PUSH(sm_true(), MAIN_STACK);
+}
+
+static void internal_is_negative(int argc)
+{
+	if (argc < 1)
+		ERROR_CODE("negative? function expects at least 1 argument.", 45);
+
+	while (--argc >= 0) {
+		sm_obj value = POP(MAIN_STACK);
+		if(!is_int(value)) {
+			PUSH(sm_false(), MAIN_STACK);
+			return;
+		}
+		else if(int_val(value) > 0) {
+			PUSH(sm_false(), MAIN_STACK);
+			return;
+		}
+	}
 	PUSH(sm_true(), MAIN_STACK);
 }

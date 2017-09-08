@@ -44,6 +44,13 @@ The json config files would need to be adopted to your compiler location.
 * </> <=/>= - lesser / greater equal then
 * and / or / not - logic operators
 
+### Implemented type check functions:  
+* int? - All parameters int type?
+* string? - All parameters string type?
+* zero? - All parameters 0?
+* pos? - All parameters positive?
+* neg? - All parameters negative?
+
 ### Most important Limitations:
 * No garbage collection currently
 * Only supports integers

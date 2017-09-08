@@ -27,10 +27,12 @@ static void internal_lessequal(int argc);
 static void internal_logical_or(int argc);
 static void internal_logical_and(int argc);
 static void internal_logical_not(int argc);
-//static void internal_is_int(int argc);
-//static void internal_is_string(int argc);
-//static void internal_is_zero(int argc);
-//static void internal_is_positive(int argc);
-//static void internal_is_negative(int argc);
+
+// Type Check Functionality
+static void internal_is_int(int argc);
+static void internal_is_string(int argc);
+static void internal_is_zero(int argc);
+static void internal_is_positive(int argc);
+static void internal_is_negative(int argc);
 
 #endif // FUNCTIONS_HEADER
