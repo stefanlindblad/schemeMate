@@ -16,13 +16,13 @@ void init_functions()
 	register_system_function("eq?", internal_mem_equal);
 	register_system_function("=", internal_int_equal);
 	register_system_function("string=", internal_string_equal);
-	//register_system_function("<", internal_lessthan);
-	//register_system_function(">", internal_greaterthan);
-	//register_system_function(">=", internal_greaterequal);
-	//register_system_function("<=", internal_lessequal);
-	//register_system_function("or", internal_logical_or);
-	//register_system_function("and", internal_logical_and);
-	//register_system_function("not", internal_logical_not);
+	register_system_function("<", internal_lessthan);
+	register_system_function(">", internal_greaterthan);
+	register_system_function(">=", internal_greaterequal);
+	register_system_function("<=", internal_lessequal);
+	register_system_function("or", internal_logical_or);
+	register_system_function("and", internal_logical_and);
+	register_system_function("not", internal_logical_not);
 	//register_system_function("integer?", internal_is_int);
 	//register_system_function("string?", internal_is_string);
 	//register_system_function("zero?", internal_is_zero);
@@ -296,4 +296,166 @@ static void internal_string_equal(int argc)
 			}
 		}
 		PUSH(sm_true(), MAIN_STACK);
+}
+
+static void internal_lessthan(int argc)
+{
+	int one, two;
+
+	if (argc != 2)
+		ERROR_CODE("< function expects exactly 2 arguments.", 45);
+
+	sm_obj obj1 = POP(MAIN_STACK);
+	sm_obj obj2 = POP(MAIN_STACK);
+
+	if (is_int(obj1) && is_int(obj2)) {
+		one = int_val(obj2);
+		two = int_val(obj1);
+
+		if (one < two) {
+			PUSH(sm_true(), MAIN_STACK);
+			return;
+		}
+		else
+			PUSH(sm_false(), MAIN_STACK);
+	}
+	else
+		ERROR_CODE("< function works on numbers, received NaN.", 46);
+}
+
+static void internal_greaterthan(int argc)
+{
+	int one, two;
+
+	if (argc != 2)
+		ERROR_CODE("> function expects exactly 2 arguments.", 45);
+
+	sm_obj obj1 = POP(MAIN_STACK);
+	sm_obj obj2 = POP(MAIN_STACK);
+
+	if (is_int(obj1) && is_int(obj2)) {
+		one = int_val(obj2);
+		two = int_val(obj1);
+
+		if (one > two) {
+			PUSH(sm_true(), MAIN_STACK);
+			return;
+		}
+		else
+			PUSH(sm_false(), MAIN_STACK);
+	}
+	else
+		ERROR_CODE("> function works on numbers, received NaN.", 46);
+}
+
+static void internal_greaterequal(int argc)
+{
+	int one, two;
+
+	if (argc != 2)
+		ERROR_CODE(">= function expects exactly 2 arguments.", 45);
+
+	sm_obj obj1 = POP(MAIN_STACK);
+	sm_obj obj2 = POP(MAIN_STACK);
+
+	if (is_int(obj1) && is_int(obj2)) {
+		one = int_val(obj2);
+		two = int_val(obj1);
+
+		if (one >= two) {
+			PUSH(sm_true(), MAIN_STACK);
+			return;
+		}
+		else
+			PUSH(sm_false(), MAIN_STACK);
+	}
+	else
+		ERROR_CODE(">= function works on numbers, received NaN.", 46);
+}
+
+static void internal_lessequal(int argc)
+{
+	int one, two;
+
+	if (argc != 2)
+		ERROR_CODE("<= function expects exactly 2 arguments.", 45);
+
+	sm_obj obj1 = POP(MAIN_STACK);
+	sm_obj obj2 = POP(MAIN_STACK);
+
+	if (is_int(obj1) && is_int(obj2)) {
+		one = int_val(obj2);
+		two = int_val(obj1);
+
+		if (one <= two) {
+			PUSH(sm_true(), MAIN_STACK);
+			return;
+		}
+		else
+			PUSH(sm_false(), MAIN_STACK);
+	}
+	else
+		ERROR_CODE("<= function works on numbers, received NaN.", 46);
+}
+
+static void internal_logical_or(int argc)
+{
+	if (argc != 2)
+		ERROR_CODE("(or) function expects exactly 2 arguments.", 45);
+
+	sm_obj obj1 = POP(MAIN_STACK);
+	sm_obj obj2 = POP(MAIN_STACK);
+
+	if (obj1 == sm_true() || obj2 == sm_true()) {
+		PUSH(sm_true(), MAIN_STACK);
+		return;
+	}
+
+	if ((is_int(obj1) && int_val(obj1) > 0) || (is_int(obj2) && int_val(obj2) > 0)) {
+		PUSH(sm_true(), MAIN_STACK);
+		return;
+	}
+
+	PUSH(sm_false(), MAIN_STACK);
+}
+
+static void internal_logical_and(int argc)
+{
+	if (argc != 2)
+		ERROR_CODE("(and) function expects exactly 2 arguments.", 45);
+
+	sm_obj obj1 = POP(MAIN_STACK);
+	sm_obj obj2 = POP(MAIN_STACK);
+
+	if (obj1 == sm_true() && obj2 == sm_true()) {
+		PUSH(sm_true(), MAIN_STACK);
+		return;
+	}
+
+	if ((is_int(obj1) && int_val(obj1) > 0) && (is_int(obj2) && int_val(obj2) > 0)) {
+		PUSH(sm_true(), MAIN_STACK);
+		return;
+	}
+
+	PUSH(sm_false(), MAIN_STACK);
+}
+
+static void internal_logical_not(int argc)
+{
+	if (argc != 1)
+		ERROR_CODE("(not) function expects exactly 1 argument.", 45);
+
+	sm_obj obj = POP(MAIN_STACK);
+
+	if (obj == sm_true()) {
+		PUSH(sm_false(), MAIN_STACK);
+		return;
+	}
+
+	if (is_int(obj) && int_val(obj) > 0) {
+		PUSH(sm_false(), MAIN_STACK);
+		return;
+	}
+
+	PUSH(sm_true(), MAIN_STACK);
 }

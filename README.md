@@ -41,6 +41,8 @@ The json config files would need to be adopted to your compiler location.
 * eq? - Memory based comparison (eq? Auto Auto) => #t
 * = - Number based comparison (= 5 4 3) => #f
 * string= - String based comparsion (string= "abc" "abc") => #t
+* </> <=/>= - lesser / greater equal then
+* and / or / not - logic operators
 
 ### Most important Limitations:
 * No garbage collection currently
