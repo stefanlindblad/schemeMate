@@ -30,7 +30,7 @@ The json config files would need to be adopted to your compiler location.
 ### Implemented math functions:  
 * "+" - Addition
 * "-" - Substraction
-* ["] - Multiplikation
+* "*" - Multiplikation
 * "/" - Division
 * max - Maximum
 * min - Minimum
