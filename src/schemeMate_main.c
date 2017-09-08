@@ -17,7 +17,7 @@ void repl()
 
 	while (true) {
 		expr = sm_read(INPUT, true);
-		result = sm_eval(expr);
+		result = sm_eval(expr, MAIN_ENV);
 		if (result != SM_EOF) {
 			sm_print(stdout, result, true);
 			PRINT("\n");

@@ -26,19 +26,19 @@ sm_stack allocate_stack()
 	return stack;
 }
 
-void sm_eval_intern(sm_obj o) 
+void sm_eval_intern(sm_obj o, sm_env env) 
 {
     sm_obj obj;
     switch (get_tag(o)) {
 		case TAG_SYMBOL:
-			obj = get_binding(o, MAIN_ENV);
+			obj = get_binding(o, env);
 			if (obj == NULL)
 				ERROR_CODE("Unknown variable given.", 44);
 			PUSH(obj, MAIN_STACK);
 	    	return;
 		case TAG_CONS:
 	    	callDepth++;
-	    	sm_eval_list(o);
+	    	sm_eval_list(o, env);
 	    	callDepth--;
 	    	return;
 		default:
@@ -48,17 +48,17 @@ void sm_eval_intern(sm_obj o)
 	return POP(MAIN_STACK);
 }
 
-sm_obj sm_eval(sm_obj o)
+sm_obj sm_eval(sm_obj o, sm_env env)
 {
-	sm_eval_intern(o);
+	sm_eval_intern(o, env);
 	return POP(MAIN_STACK);
 }
 
-sm_obj sm_eval_list(sm_obj o) 
+sm_obj sm_eval_list(sm_obj o, sm_env env) 
 {
 	sm_obj func = car(o);
 	sm_obj args = cdr(o);
-	sm_obj obj = sm_eval(func);
+	sm_obj obj = sm_eval(func, env);
 
 	switch (get_tag(obj)) {
 	case TAG_SYS_FUNC:
@@ -67,7 +67,7 @@ sm_obj sm_eval_list(sm_obj o)
 		while (!is_nil(args)) {
 		    sm_obj nextArg = car(args);
 		    args = cdr(args);
-		    PUSH(sm_eval(nextArg), MAIN_STACK);
+		    PUSH(sm_eval(nextArg, env), MAIN_STACK);
 		    argc++;
 		}
 		(*obj->sm_sys_func.code)(argc);
@@ -93,7 +93,7 @@ sm_obj sm_eval_list(sm_obj o)
 			sm_obj arg_input = car(args);
 			args = cdr(args);
 
-			sm_obj arg_value = sm_eval(arg_input);
+			sm_obj arg_value = sm_eval(arg_input, func_env);
 			add_binding(arg_name, arg_value, &func_env);
 		}
 
@@ -101,7 +101,7 @@ sm_obj sm_eval_list(sm_obj o)
 		while (func_body != sm_nil()) {
 			sm_obj body_data = car(func_body);
 			func_body = cdr(func_body);
-			body_result = sm_eval(body_data);
+			body_result = sm_eval(body_data, func_env);
 		}
 		PUSH(body_result, MAIN_STACK);
 	    return;

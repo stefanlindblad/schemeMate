@@ -41,7 +41,7 @@ static void internal_define(sm_obj args)
 	sm_obj data = cdr(args);
 
 	if (is_symbol(literal)) {
-		sm_obj value = sm_eval(data);
+		sm_obj value = sm_eval(data, MAIN_ENV);
 		add_binding(literal, value, &MAIN_ENV);
 		PUSH(sm_void(), MAIN_STACK);
 		return;

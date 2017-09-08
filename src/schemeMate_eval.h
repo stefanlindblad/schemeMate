@@ -42,9 +42,9 @@ static inline void DROP(int amount, sm_stack s)
 
 void init_evaluation();
 sm_stack allocate_stack();
-void sm_eval_intern(sm_obj o);
-sm_obj sm_eval(sm_obj o);
-sm_obj sm_eval_list(sm_obj o);
+void sm_eval_intern(sm_obj o, sm_env env);
+sm_obj sm_eval(sm_obj o, sm_env env);
+sm_obj sm_eval_list(sm_obj o, sm_env env);
 void register_system_syntax(char* name, void_func callable);
 void register_system_function(char* name, void_func callable);
 

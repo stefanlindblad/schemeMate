@@ -136,12 +136,12 @@ void sm_selftest()
     ASSERT(rslt == NULL, "get_binding does not work as expected");
 
     rslt = sm_readCString("(+ 10 30)");
-    sm_obj rslt2 = sm_eval(rslt);
+    sm_obj rslt2 = sm_eval(rslt, MAIN_ENV);
     ASSERT(rslt2->sm_any.tag == TAG_INT, "plus function check failed");
     ASSERT(rslt2->sm_int.iVal == 40, "plus function check failed");
 
     rslt = sm_readCString("(- 100 -30 20)");
-    rslt2 = sm_eval(rslt);
+    rslt2 = sm_eval(rslt, MAIN_ENV);
     ASSERT(rslt2->sm_any.tag == TAG_INT, "minus function check failed");
     ASSERT(rslt2->sm_int.iVal == 110, "minus function check failed");
 
