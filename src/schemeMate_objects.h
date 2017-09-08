@@ -171,6 +171,10 @@ static inline sm_bool is_cons(sm_obj obj) {
     return has_tag(obj, TAG_CONS);
 }
 
+static inline sm_bool is_func(sm_obj obj) {
+    return (has_tag(obj, TAG_SYS_FUNC) || has_tag(obj, TAG_USER_FUNC));
+}
+
 // Data getter
 
 static inline long int_val(sm_obj obj) {

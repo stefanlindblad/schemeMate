@@ -98,12 +98,12 @@ sm_obj new_sys_func(sm_func funcPtr, char *name)
 	return o;
 }
 
-sm_obj new_sys_syntax(sm_func syntaxPtr)
+sm_obj new_sys_syntax(sm_func syntaxPtr, char *name)
 {
 	sm_obj o = (sm_obj) malloc(sizeof(struct sm_sys_syntax_type));
-
 	o->sm_sys_syntax.tag = TAG_SYS_SYNTAX;
 	o->sm_sys_syntax.code = syntaxPtr;
+	o->sm_sys_syntax.name = name;
 	return o;
 }
 

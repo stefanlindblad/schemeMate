@@ -74,15 +74,62 @@ sm_obj sm_eval_list(sm_obj o)
 		return;
 	}
 	case TAG_SYS_SYNTAX:
-	    (*obj->sm_sys_syntax.code)(args);
+	{
+		(*obj->sm_sys_syntax.code)(args);
 	    return;
+	}
+	case TAG_USER_FUNC:
+	{
+		sm_obj func_args = obj->sm_user_func.args;
+		sm_obj func_body = obj->sm_user_func.body;
+		sm_obj body_result = sm_nil();
+		sm_env func_env = allocate_env(20); // TODO: check for element size and set accordingly
 
+		// Compare layout arguments with given arguments and store evaluated data
+		while (func_args != sm_nil()) {
+
+			sm_obj arg_name = car(func_args);
+			func_args = cdr(func_args);
+			sm_obj arg_input = car(args);
+			args = cdr(args);
+
+			sm_obj arg_value = sm_eval(arg_input);
+			add_binding(arg_name, arg_value, &func_env);
+		}
+
+		// Same thing for the body data
+		while (func_body != sm_nil()) {
+			sm_obj body_data = car(func_body);
+			func_body = cdr(func_body);
+			body_result = sm_eval(body_data);
+		}
+		PUSH(body_result, MAIN_STACK);
+	    return;
+	}
 	default:
 	    ERROR_CODE("Unknown function reference.", 53);
     }
 }
 
+void register_system_syntax(char* name, void_func callable)
+{
+    sm_obj syntax = new_sys_syntax(callable, name);
+    PUSH(syntax, MAIN_STACK);
+    sm_obj key = new_symbol(name);
+    syntax = POP(MAIN_STACK);
+    add_binding(key, syntax, &MAIN_ENV);
+}
+
 void register_system_function(char* name, void_func callable)
+{
+    sm_obj function = new_sys_func(callable, name);
+    PUSH(function, MAIN_STACK);
+    sm_obj key = new_symbol(name);
+    function = POP(MAIN_STACK);
+    add_binding(key, function, &MAIN_ENV);
+}
+
+void register_user_function(char* name, void_func callable)
 {
     sm_obj function = new_sys_func(callable, name);
     PUSH(function, MAIN_STACK);

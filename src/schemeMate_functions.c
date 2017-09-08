@@ -2,6 +2,9 @@
 
 void init_functions()
 {
+	// Register Basic Syntax
+	register_system_syntax("define", internal_define);
+
 	// Register Math Functions
 	register_system_function("+", internal_plus);
 	register_system_function("-", internal_minus);
@@ -30,6 +33,31 @@ void init_functions()
 	register_system_function("zero?", internal_is_zero);
 	register_system_function("pos?", internal_is_positive);
 	register_system_function("neg?", internal_is_negative);
+}
+
+static void internal_define(sm_obj args)
+{
+	sm_obj literal = car(args);
+	sm_obj data = cdr(args);
+
+	if (is_symbol(literal)) {
+		sm_obj value = sm_eval(data);
+		add_binding(literal, value, &MAIN_ENV);
+		PUSH(sm_void(), MAIN_STACK);
+		return;
+	}
+
+	if (is_cons(literal)) {
+		sm_obj name = car(literal);
+
+		if (is_symbol(name)) {
+			sm_obj args = cdr(literal);
+			sm_obj func = new_user_func(args, data);
+			add_binding(name, func, &MAIN_ENV);
+			PUSH(sm_void(), MAIN_STACK);
+			return;
+		}
+	}
 }
 
 static void internal_plus(int argc)

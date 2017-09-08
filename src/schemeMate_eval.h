@@ -45,6 +45,7 @@ sm_stack allocate_stack();
 void sm_eval_intern(sm_obj o);
 sm_obj sm_eval(sm_obj o);
 sm_obj sm_eval_list(sm_obj o);
+void register_system_syntax(char* name, void_func callable);
 void register_system_function(char* name, void_func callable);
 
 #endif // EVAL_HEADER
