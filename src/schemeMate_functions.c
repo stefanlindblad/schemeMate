@@ -41,19 +41,27 @@ static void internal_define(sm_obj args)
 	sm_obj data = cdr(args);
 
 	if (is_symbol(literal)) {
-		sm_obj value = sm_eval(data, MAIN_ENV);
+		sm_obj entry = get_binding(literal, MAIN_ENV);
+		if (entry != NULL)
+			ERROR_CODE("define tried to redefine existing symbol, use set! instead.", 54);
+
+		sm_obj object = car(data);
+		sm_obj value = sm_eval(object, MAIN_ENV);
 		add_binding(literal, value, &MAIN_ENV);
 		PUSH(sm_void(), MAIN_STACK);
 		return;
 	}
 
 	if (is_cons(literal)) {
-		sm_obj name = car(literal);
+		sm_obj object = car(literal);
+		sm_obj entry = get_binding(object, MAIN_ENV);
+		if (entry != NULL)
+			ERROR_CODE("define tried to redefine existing symbol, use set! instead.", 54);
 
-		if (is_symbol(name)) {
+		if (is_symbol(object)) {
 			sm_obj args = cdr(literal);
 			sm_obj func = new_user_func(args, data);
-			add_binding(name, func, &MAIN_ENV);
+			add_binding(object, func, &MAIN_ENV);
 			PUSH(sm_void(), MAIN_STACK);
 			return;
 		}

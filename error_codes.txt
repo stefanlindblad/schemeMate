@@ -12,4 +12,5 @@ code 50: syntax error - the given scheme code has missing brackets or other misf
 code 51: unkown stream type - schemeMate supports string and file streams to read form.
 code 52: non-terminated string - the given string to interprete is not terminated correctly.
 code 53: unkown function - the function you tried to call was unkown to the interpreter.
+code 54: unallowed redefine - the interpreter tried to define a symbol with "define" which was already known.
 code 666: unkown error code - a problem occured but it was not possible to retrieve a valid error code.
