@@ -84,6 +84,7 @@ sm_obj sm_eval_list(sm_obj o, sm_env env)
 		sm_obj func_body = obj->sm_user_func.body;
 		sm_obj body_result = sm_nil();
 		sm_env func_env = allocate_env(20); // TODO: check for element size and set accordingly
+		func_env->parent = env;
 
 		// Compare layout arguments with given arguments and store evaluated data
 		while (func_args != sm_nil()) {
