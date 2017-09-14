@@ -5,6 +5,7 @@ void init_functions()
 	// Register Basic Syntax
 	register_system_syntax("define", internal_define);
 	register_system_syntax("set!", internal_set);
+	register_system_syntax("lambda", internal_lambda);
 	register_system_syntax("display", internal_display);
 
 	// Register Math Functions
@@ -97,6 +98,21 @@ static void internal_set(sm_obj args)
 		ERROR_CODE("set tried to define new symbol, use define instead.", 55);
 
 	assign_symbol(args);
+}
+
+static void internal_lambda(sm_obj args)
+{
+	if (!is_cons(args))
+	ERROR_CODE("lambda function expects at least 2 arguments.", 45);
+
+	sm_obj lambda_args = car(args);
+	sm_obj body_args = cdr(args);
+
+	if(lambda_args == sm_nil() || !is_cons(lambda_args))
+		ERROR_CODE("lambda function expects two list objects (cons) as parameters.", 45);
+
+	sm_obj lambda_func = new_user_func(lambda_args, body_args);
+	PUSH(lambda_func, MAIN_STACK);
 }
 
 static void internal_display(sm_obj args)
