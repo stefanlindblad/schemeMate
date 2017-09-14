@@ -31,6 +31,8 @@ void sm_print(FILE* file, sm_obj o, bool oneLineMode)
 		fprintf(file, "#eof");
 		break;
 	case TAG_VOID:
+		if (oneLineMode)
+			return;
 		fprintf(file, "#void");
 		break;
 	case TAG_SYS_FUNC:

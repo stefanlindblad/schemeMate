@@ -5,6 +5,7 @@ void init_functions()
 	// Register Basic Syntax
 	register_system_syntax("define", internal_define);
 	register_system_syntax("set!", internal_set);
+	register_system_syntax("display", internal_display);
 
 	// Register Math Functions
 	register_system_function("+", internal_plus);
@@ -34,6 +35,9 @@ void init_functions()
 	register_system_function("zero?", internal_is_zero);
 	register_system_function("pos?", internal_is_positive);
 	register_system_function("neg?", internal_is_negative);
+
+	// Register Utility Functions
+	register_system_function("exit", internal_exit);
 }
 
 static void assign_symbol(sm_obj args)
@@ -93,6 +97,18 @@ static void internal_set(sm_obj args)
 		ERROR_CODE("set tried to define new symbol, use define instead.", 55);
 
 	assign_symbol(args);
+}
+
+static void internal_display(sm_obj args)
+{
+	sm_obj literal = car(args);
+	sm_obj end = cdr(args);
+
+	if (end != sm_nil())
+		ERROR_CODE("display function expects exactly 1 argument.", 45);
+
+	sm_print(stdout, literal, true);
+	PUSH(sm_void(), MAIN_STACK);
 }
 
 static void internal_plus(int argc)

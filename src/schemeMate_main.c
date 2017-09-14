@@ -2,11 +2,6 @@
 
 void init_system() {
     INPUT = new_file_stream(stdin);
-    SM_NIL = sm_nil();
-    SM_TRUE = sm_true();
-    SM_FALSE = sm_false();
-    SM_VOID = sm_void();
-    SM_EOF = sm_eof();
 }
 
 void repl()
@@ -18,7 +13,7 @@ void repl()
 	while (true) {
 		expr = sm_read(INPUT, true);
 		result = sm_eval(expr, MAIN_ENV);
-		if (result != SM_EOF) {
+		if (result != sm_void() || result != sm_eof()) {
 			sm_print(stdout, result, true);
 			PRINT("\n");
 			PRINT(">>> ");
