@@ -51,6 +51,12 @@ The json config files would need to be adopted to your compiler location.
 * pos? - All parameters positive?
 * neg? - All parameters negative?
 
+### Implemented utility functions:  
+* display - prints the given input
+* exit - exits the program with the given error code
+* define - define new symbols or functions
+* set! - override existing symbols or functions
+
 ### Most important Limitations:
 * No garbage collection currently
 * Only supports integers
