@@ -39,4 +39,7 @@ static void internal_is_zero(int argc);
 static void internal_is_positive(int argc);
 static void internal_is_negative(int argc);
 
+// Helper Functionality
+static void internal_exit(int argc);
+
 #endif // FUNCTIONS_HEADER

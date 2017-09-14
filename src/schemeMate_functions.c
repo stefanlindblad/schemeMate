@@ -611,3 +611,15 @@ static void internal_is_negative(int argc)
 	}
 	PUSH(sm_true(), MAIN_STACK);
 }
+
+static void internal_exit(int argc)
+{
+	if (argc != 1)
+		ERROR_CODE("exit function takes exactly one argument.", 45);
+
+	sm_obj value = POP(MAIN_STACK);
+	if(is_int(value))
+		exit(int_val(value));
+
+	exit(0);
+}
