@@ -8,6 +8,7 @@ void init_functions();
 
 // Basic Syntax
 static void internal_define(sm_obj args);
+static void internal_set(sm_obj args);
 
 // Math Functionality
 static void internal_plus(int argc);

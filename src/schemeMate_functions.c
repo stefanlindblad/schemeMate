@@ -4,6 +4,7 @@ void init_functions()
 {
 	// Register Basic Syntax
 	register_system_syntax("define", internal_define);
+	register_system_syntax("set!", internal_set);
 
 	// Register Math Functions
 	register_system_function("+", internal_plus);
@@ -35,16 +36,12 @@ void init_functions()
 	register_system_function("neg?", internal_is_negative);
 }
 
-static void internal_define(sm_obj args)
+static void assign_symbol(sm_obj args)
 {
 	sm_obj literal = car(args);
 	sm_obj data = cdr(args);
 
 	if (is_symbol(literal)) {
-		sm_obj entry = get_binding(literal, MAIN_ENV);
-		if (entry != NULL)
-			ERROR_CODE("define tried to redefine existing symbol, use set! instead.", 54);
-
 		sm_obj object = car(data);
 		sm_obj value = sm_eval(object, MAIN_ENV);
 		add_binding(literal, value, &MAIN_ENV);
@@ -54,10 +51,6 @@ static void internal_define(sm_obj args)
 
 	if (is_cons(literal)) {
 		sm_obj object = car(literal);
-		sm_obj entry = get_binding(object, MAIN_ENV);
-		if (entry != NULL)
-			ERROR_CODE("define tried to redefine existing symbol, use set! instead.", 54);
-
 		if (is_symbol(object)) {
 			sm_obj args = cdr(literal);
 			sm_obj func = new_user_func(args, data);
@@ -66,6 +59,40 @@ static void internal_define(sm_obj args)
 			return;
 		}
 	}
+}
+
+static void internal_define(sm_obj args)
+{
+	sm_obj literal = car(args);
+	sm_obj entry = sm_nil();
+
+	if (is_symbol(literal))
+		entry = get_binding(literal, MAIN_ENV);
+
+	if (is_cons(literal))
+		entry = get_binding(car(literal), MAIN_ENV);
+
+	if (entry != NULL)
+		ERROR_CODE("define tried to redefine existing symbol, use set! instead.", 54);
+
+	assign_symbol(args);
+}
+
+static void internal_set(sm_obj args)
+{
+	sm_obj literal = car(args);
+	sm_obj entry = sm_nil();
+
+	if (is_symbol(literal))
+		entry = get_binding(literal, MAIN_ENV);
+
+	if (is_cons(literal))
+		entry = get_binding(car(literal), MAIN_ENV);
+
+	if (entry == NULL)
+		ERROR_CODE("set tried to define new symbol, use define instead.", 55);
+
+	assign_symbol(args);
 }
 
 static void internal_plus(int argc)

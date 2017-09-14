@@ -33,7 +33,7 @@ void sm_eval_intern(sm_obj o, sm_env env)
 		case TAG_SYMBOL:
 			obj = get_binding(o, env);
 			if (obj == NULL)
-				ERROR_CODE("Unknown variable given.", 44);
+				ERROR_CODE("Unknown variable or function given.", 44);
 			PUSH(obj, MAIN_STACK);
 	    	return;
 		case TAG_CONS:
