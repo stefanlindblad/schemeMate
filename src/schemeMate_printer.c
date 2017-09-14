@@ -104,8 +104,7 @@ void read_enter_and_return(sm_stream inStream)
 
 void error(char *message, char *file, int line, int exit_code)
 {
-    fprintf(stdout, "%s:%d: %s\n", file, line, message);
-	fprintf(stdout, "schemeMate exited with error code %d, press ENTER to continue.\n", exit_code);
-	sm_read(new_file_stream(stdin), true);
+    printf("%s:%d: %s\n", file, line, message);
+	printf("schemeMate exited with error code %d, press ENTER to continue.\n", exit_code);
 	exit(exit_code);
 }
