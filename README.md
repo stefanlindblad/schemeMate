@@ -44,6 +44,11 @@ The json config files would need to be adopted to your compiler location.
 * </> <=/>= - lesser / greater equal then
 * and / or / not - logic operators
 
+### Implemented list functions:
+* car - Returns head element of a list
+* cdr - Returns tail element of a list
+* cons - Constructs a new list from given element and list
+
 ### Implemented type check functions:  
 * int? - All parameters int type?
 * string? - All parameters string type?
@@ -52,11 +57,10 @@ The json config files would need to be adopted to your compiler location.
 * neg? - All parameters negative?
 
 ### Implemented utility functions:  
-* display - prints the given input
+* display / ' - prints the given input without evaluating it
 * exit - exits the program with the given error code
 * define - define new symbols or functions
 * set! - override existing symbols or functions
-* quote - display unevaluated data
 
 ### Most important Limitations:
 * No garbage collection currently
