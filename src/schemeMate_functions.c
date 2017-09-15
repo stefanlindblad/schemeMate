@@ -7,9 +7,7 @@ void init_functions()
 	register_system_syntax("set!", internal_set);
 	register_system_syntax("lambda", internal_lambda);
 	register_system_syntax("display", internal_display);
-	register_system_syntax("car", internal_car);
-	register_system_syntax("cdr", internal_cdr);
-	register_system_syntax("cons", internal_cons);
+	register_system_syntax("quote", internal_quote);
 
 	// Register Math Functions
 	register_system_function("+", internal_plus);
@@ -42,6 +40,9 @@ void init_functions()
 
 	// Register Utility Functions
 	register_system_function("exit", internal_exit);
+	register_system_function("car", internal_car);
+	register_system_function("cdr", internal_cdr);
+	register_system_function("cons", internal_cons);
 }
 
 static void assign_symbol(sm_obj args)
@@ -130,45 +131,11 @@ static void internal_display(sm_obj args)
 	PUSH(sm_void(), MAIN_STACK);
 }
 
-static void internal_car(sm_obj args)
+static void internal_quote(sm_obj args)
 {
-	sm_obj literal = car(args);
-	if (!is_cons(literal))
-		ERROR_CODE("car function only works on lists.", 45);
-
-	sm_obj head = car(literal);
-
-	PUSH(head, MAIN_STACK);
+	PUSH(args, MAIN_STACK);
 }
 
-static void internal_cdr(sm_obj args)
-{
-	sm_obj literal = car(args);
-	if (!is_cons(literal))
-		ERROR_CODE("cdr function only works on lists.", 45);
-
-	sm_obj tail = cdr(literal);
-
-	PUSH(tail, MAIN_STACK);
-}
-
-static void internal_cons(sm_obj args)
-{
-	sm_obj first = car(args);
-	sm_obj rest = cdr(args);
-
-	if (!is_cons(rest))
-		ERROR_CODE("cons function only adds to lists", 45);
-
-	sm_obj result;
-
-	if (is_nil(car(rest)))
-		result = new_cons(first, sm_nil());
-	else
-		result = new_cons(first, rest);
-
-	PUSH(result, MAIN_STACK);
-}
 static void internal_plus(int argc)
 {
 	int sum = 0;
@@ -696,4 +663,52 @@ static void internal_exit(int argc)
 		exit(int_val(value));
 
 	exit(0);
+}
+
+static void internal_car(int argc)
+{
+	if (argc != 1)
+		ERROR_CODE("car function takes exactly one argument.", 45);
+
+	sm_obj list = POP(MAIN_STACK);
+
+	if (!is_cons(list))
+		ERROR_CODE("car function only works on lists.", 45);
+
+	sm_obj head = car(list);
+
+	PUSH(head, MAIN_STACK);
+}
+
+static void internal_cdr(int argc)
+{
+	if (argc != 1)
+		ERROR_CODE("cdr function takes exactly one argument.", 45);
+
+	sm_obj list = POP(MAIN_STACK);
+
+	if (!is_cons(list))
+		ERROR_CODE("cdr function only works on lists.", 45);
+
+	sm_obj tail = cdr(list);
+
+	PUSH(tail, MAIN_STACK);
+}
+
+static void internal_cons(int argc)
+{
+	sm_obj rest = POP(MAIN_STACK);
+	sm_obj first = POP(MAIN_STACK);
+
+	if (!is_cons(rest))
+		ERROR_CODE("cons function only adds to lists", 45);
+
+	sm_obj result;
+
+	if (is_nil(car(rest)))
+		result = new_cons(first, sm_nil());
+	else
+		result = new_cons(first, rest);
+
+	PUSH(result, MAIN_STACK);
 }

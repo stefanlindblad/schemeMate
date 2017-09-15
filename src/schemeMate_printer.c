@@ -20,7 +20,7 @@ void sm_print(sm_obj o, bool oneLineMode)
 		printf("%s", symbol_val(o));
 		break;
 	case TAG_STRING:
-		printf("%s", string_val(o));
+		printf("'%s'", string_val(o));
 		break;
 	case TAG_CONS:
 		sm_printList(o, oneLineMode);

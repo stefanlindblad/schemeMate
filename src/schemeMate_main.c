@@ -13,11 +13,11 @@ void repl()
 	while (true) {
 		expr = sm_read(INPUT, true);
 		result = sm_eval(expr, MAIN_ENV);
-		if (result != sm_void() || result != sm_eof()) {
-			sm_print(result, true);
-			PRINT("\n");
-			PRINT(">>> ");
-		}
+		if (result == sm_void() || result == sm_eof())
+			continue;
+		sm_print(result, true);
+		PRINT("\n");
+		PRINT(">>> ");
 	}
 }
 

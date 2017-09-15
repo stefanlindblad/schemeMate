@@ -11,9 +11,7 @@ static void internal_define(sm_obj args);
 static void internal_set(sm_obj args);
 static void internal_lambda(sm_obj args);
 static void internal_display(sm_obj args);
-static void internal_car(sm_obj args);
-static void internal_cdr(sm_obj args);
-static void internal_cons(sm_obj args);
+static void internal_quote(sm_obj args);
 
 // Math Functionality
 static void internal_plus(int argc);
@@ -43,6 +41,11 @@ static void internal_is_string(int argc);
 static void internal_is_zero(int argc);
 static void internal_is_positive(int argc);
 static void internal_is_negative(int argc);
+
+// List Functionality
+static void internal_car(int argc);
+static void internal_cdr(int argc);
+static void internal_cons(int argc);
 
 // Helper Functionality
 static void internal_exit(int argc);

@@ -210,7 +210,7 @@ sm_obj sm_read(sm_stream inStream, bool oneLineMode)
     if (nextChar == '\'') {
 		sm_obj quotedExpr;
 		quotedExpr = sm_read(inStream, oneLineMode);
-		return new_cons(new_symbol("display"), new_cons(quotedExpr, sm_nil()));
+		return new_cons(new_symbol("quote"), quotedExpr);
     }
 
     while (true) {
