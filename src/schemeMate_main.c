@@ -14,7 +14,7 @@ void repl()
 		expr = sm_read(INPUT, true);
 		result = sm_eval(expr, MAIN_ENV);
 		if (result != sm_void() || result != sm_eof()) {
-			sm_print(stdout, result, true);
+			sm_print(result, true);
 			PRINT("\n");
 			PRINT(">>> ");
 		}

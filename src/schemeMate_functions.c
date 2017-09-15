@@ -7,6 +7,9 @@ void init_functions()
 	register_system_syntax("set!", internal_set);
 	register_system_syntax("lambda", internal_lambda);
 	register_system_syntax("display", internal_display);
+	register_system_syntax("car", internal_car);
+	register_system_syntax("cdr", internal_cdr);
+	register_system_syntax("cons", internal_cons);
 
 	// Register Math Functions
 	register_system_function("+", internal_plus);
@@ -123,10 +126,49 @@ static void internal_display(sm_obj args)
 	if (end != sm_nil())
 		ERROR_CODE("display function expects exactly 1 argument.", 45);
 
-	sm_print(stdout, literal, true);
+	sm_print(literal, true);
 	PUSH(sm_void(), MAIN_STACK);
 }
 
+static void internal_car(sm_obj args)
+{
+	sm_obj literal = car(args);
+	if (!is_cons(literal))
+		ERROR_CODE("car function only works on lists.", 45);
+
+	sm_obj head = car(literal);
+
+	PUSH(head, MAIN_STACK);
+}
+
+static void internal_cdr(sm_obj args)
+{
+	sm_obj literal = car(args);
+	if (!is_cons(literal))
+		ERROR_CODE("cdr function only works on lists.", 45);
+
+	sm_obj tail = cdr(literal);
+
+	PUSH(tail, MAIN_STACK);
+}
+
+static void internal_cons(sm_obj args)
+{
+	sm_obj first = car(args);
+	sm_obj rest = cdr(args);
+
+	if (!is_cons(rest))
+		ERROR_CODE("cons function only adds to lists", 45);
+
+	sm_obj result;
+
+	if (is_nil(car(rest)))
+		result = new_cons(first, sm_nil());
+	else
+		result = new_cons(first, rest);
+
+	PUSH(result, MAIN_STACK);
+}
 static void internal_plus(int argc)
 {
 	int sum = 0;

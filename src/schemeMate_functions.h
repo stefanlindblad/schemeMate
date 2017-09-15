@@ -11,6 +11,9 @@ static void internal_define(sm_obj args);
 static void internal_set(sm_obj args);
 static void internal_lambda(sm_obj args);
 static void internal_display(sm_obj args);
+static void internal_car(sm_obj args);
+static void internal_cdr(sm_obj args);
+static void internal_cons(sm_obj args);
 
 // Math Functionality
 static void internal_plus(int argc);
