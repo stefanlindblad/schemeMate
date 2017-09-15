@@ -112,7 +112,7 @@ static void internal_lambda(sm_obj args)
 	sm_obj lambda_args = car(args);
 	sm_obj body_args = cdr(args);
 
-	if(lambda_args == sm_nil() || !is_cons(lambda_args))
+	if(!is_cons(body_args))
 		ERROR_CODE("lambda function expects two list objects (cons) as parameters.", 45);
 
 	sm_obj lambda_func = new_user_func(lambda_args, body_args);
