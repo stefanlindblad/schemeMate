@@ -30,6 +30,7 @@ void init_trampoline();
 void execute_trampoline(void_ptr_ptr_func function);
 void grow_cp_stack();
 void_ptr_ptr_func contparse_initial_eval();
-
+void_ptr_ptr_func contparse_func_eval();
+void_ptr_ptr_func contparse_args_eval();
 
 #endif // TRAMPOLINE_HEADER

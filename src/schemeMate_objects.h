@@ -99,6 +99,7 @@ struct sm_user_func_type {
 
 struct sm_sys_syntax_type {
 	sm_tag tag;
+	sm_func continuation_code;
 	sm_func code;
 	char *name;
 };

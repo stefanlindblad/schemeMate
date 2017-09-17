@@ -42,11 +42,80 @@ void_ptr_ptr_func contparse_initial_eval()
 	    PUSH_M(expr);
 	    PUSH_M(env);
 	    PUSH_M(car(expr));
-	    //SAVE_CP(contparse_eval_two);
+	    SAVE_CP(contparse_func_eval);
 	    return contparse_initial_eval;
 
 	default:
 	    PUSH_M(expr);
 	    return LOAD_CP();
 	}
+}
+
+void_ptr_ptr_func contparse_func_eval()
+{
+	sm_obj env, data, func, func_args;
+
+	func = POP_M();
+	data = POP_M();
+	env = POP_M();
+	func_args = cdr(data);
+
+	switch (get_tag(func)) {
+	case TAG_SYS_SYNTAX:
+		return (void_ptr_ptr_func) (*func->sm_sys_syntax.continuation_code)(func_args);
+	case TAG_SYS_FUNC:
+	case TAG_USER_FUNC:
+	{
+		if (is_nil(func_args) && get_tag(func) == TAG_SYS_FUNC) {
+			(*func->sm_sys_func.code)(0);
+			return LOAD_CP();
+		}
+		
+		// Function with first argument
+		PUSH_M(func);
+		PUSH_M(env);
+		PUSH_M(data);
+		PUSH_M(cdr(func_args));
+		PUSH_M(new_int(0)); // Counter for first argument
+
+		PUSH_M(env);
+		PUSH_M(car(func_args));
+		SAVE_CP(contparse_args_eval);
+		return contparse_initial_eval;
+	}
+	default:
+		ERROR_CODE("Unknown function reference.", 53);
+		return NULL;
+	}
+}
+
+void_ptr_ptr_func contparse_args_eval()
+{
+	sm_obj env, data, func, eval_arg, rest_args, num_args;
+
+	eval_arg = POP_M();
+	num_args = POP_M();
+	int nargs = int_val(num_args) + 1;
+	rest_args = POP_M();
+	data = POP_M();
+	env = POP_M();
+	func = POP_M();
+
+	// This is the 1+x argument but not the last
+	if (!is_nil(rest_args)) {
+		PUSH_M(func);
+		PUSH_M(env);
+		PUSH_M(data);
+		PUSH_M(cdr(rest_args));
+		PUSH_M(new_int(nargs));
+
+		PUSH_M(env);
+		PUSH_M(car(rest_args));
+		SAVE_CP(contparse_args_eval);
+		return contparse_initial_eval;
+	}
+
+	// This is the last argument
+	//...
+
 }
