@@ -8,21 +8,40 @@
 static int callDepth = 0;
 
 // inline functions
-
-static inline void PUSH(sm_obj o, sm_stack s)
+static inline void push_internal(sm_obj o, sm_stack s)
 {
     (s->evalStackPointer++)->entry = o;
     if (s->evalStackPointer >= s->evalStackTop)
 		  ERROR_CODE("Evaluation Stack Overflow!", 47);
 }
 
+static inline void PUSH(sm_obj o, sm_stack s)
+{
+    push_internal(o, s);
+}
+
+static inline void PUSH_M(sm_obj o)
+{
+    push_internal(o, MAIN_STACK);
+}
+
 // Returns the top element on the stack
-static inline sm_obj POP(sm_stack s)
+static inline sm_obj pop_internal(sm_stack s)
 {
     if (s->evalStackPointer <= s->evalStackBottom)
           ERROR_CODE("Evaluation Stack Underflow!", 48);
     s->evalStackPointer--;
     return s->evalStackPointer->entry;
+}
+
+static inline sm_obj POP(sm_stack s)
+{
+    return pop_internal(s);
+}
+
+static inline sm_obj POP_M()
+{
+    return pop_internal(MAIN_STACK);
 }
 
 // Returns the nTh element down the stack

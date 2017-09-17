@@ -4,7 +4,7 @@ void init_system() {
     INPUT = new_file_stream(stdin);
 }
 
-void repl()
+void recursive_repl()
 {
 	sm_obj expr;
 	sm_obj result;
@@ -21,6 +21,29 @@ void repl()
 	}
 }
 
+void_ptr_ptr_func contparse_repl_front()
+{
+	sm_obj expr;
+	sm_obj result;
+	expr = sm_read(INPUT, true);
+	PUSH_M(MAIN_ENV);
+	PUSH_M(expr);
+	SAVE_CP((void_ptr_ptr_func) contparse_repl_back);
+	return (void_ptr_ptr_func) contparse_initial_eval;
+}
+
+void_ptr_ptr_func contparse_repl_back()
+{
+	sm_obj result = POP_M();
+
+	if (result != sm_eof()) {
+		sm_print(result, true);
+		PRINT("\n");
+		PRINT(">>> ");
+	}
+	return (void_ptr_ptr_func) contparse_repl_front;
+}
+
 int main(int argc, char *argv[])
 {
 	int RUNNING_MODE = CONT_PARSE;
@@ -32,16 +55,21 @@ int main(int argc, char *argv[])
 		if (strcmp(arg, "--recursive") == 0)
 			RUNNING_MODE = RECURSIVE;
 	}
+
 	init_system();
 	init_memory();
 	init_environment();
 	init_evaluation();
+	if (RUNNING_MODE == CONT_PARSE)
+		init_trampoline();
 	init_functions();
 	sm_selftest();
 	PRINT_LINE("Welcome to schemeMate [0.2]");
 	if (RUNNING_MODE == RECURSIVE)
-		repl();
-	else if (RUNNING_MODE == CONT_PARSE)
-		repl();
+		recursive_repl();
+	else if (RUNNING_MODE == CONT_PARSE) {
+		PRINT(">>> ");
+		execute_trampoline((void_ptr_ptr_func) contparse_repl_front);
+	}
 	exit(0);
 }
