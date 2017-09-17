@@ -13,7 +13,7 @@ typedef int sm_bool;
 typedef sm_obj (*sm_func)();
 typedef void (*void_func)();
 typedef void* (*void_ptr_func)();
-typedef void_ptr_func (*void_ptr_func_func)();
+typedef void_ptr_func (*void_ptr_ptr_func)();
 typedef struct sm_entry_struct* sm_entry;
 typedef struct sm_stack_entry_struct* sm_stack_entry;
 typedef struct sm_env_struct* sm_env;

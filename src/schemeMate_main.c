@@ -23,6 +23,15 @@ void repl()
 
 int main(int argc, char *argv[])
 {
+	int RUNNING_MODE = CONT_PARSE;
+
+	// check for command line options
+	for (int i = 0; i < argc; ++i) {
+		char* arg = argv[i];
+		int a = i + 2;
+		if (strcmp(arg, "--recursive") == 0)
+			RUNNING_MODE = RECURSIVE;
+	}
 	init_system();
 	init_memory();
 	init_environment();
@@ -30,6 +39,9 @@ int main(int argc, char *argv[])
 	init_functions();
 	sm_selftest();
 	PRINT_LINE("Welcome to schemeMate [0.2]");
-	repl();
+	if (RUNNING_MODE == RECURSIVE)
+		repl();
+	else if (RUNNING_MODE == CONT_PARSE)
+		repl();
 	exit(0);
 }
