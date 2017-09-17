@@ -4,10 +4,10 @@ sm_env MAIN_ENV = NULL;
 
 void init_environment()
 {
-	MAIN_ENV = allocate_env(ENV_INIT_SIZE);
+	MAIN_ENV = allocate_env(ENV_INIT_SIZE, NULL);
 }
 
-sm_env allocate_env(unsigned env_size)
+sm_env allocate_env(unsigned env_size, sm_env parent)
 {
 	unsigned bytes;
 	sm_env env;
@@ -20,7 +20,7 @@ sm_env allocate_env(unsigned env_size)
 
 	// allocate the environment
 	env = (sm_env) malloc(sizeof(struct sm_env_struct));
-	env->parent = NULL;
+	env->parent = parent;
 	env->used_slots = 0;
 	env->allocated_slots = env_size;
 	env->entries = entries;
@@ -34,7 +34,7 @@ sm_env grow_env(sm_env oldEnv)
 
     oldSize = oldEnv->allocated_slots;
     newSize = oldSize * 2 + 1;
-    newEnv = allocate_env(newSize);
+    newEnv = allocate_env(newSize, oldEnv->parent);
 
     // TODO check if it isnt enough to iterate used_slots
     for (int i = 0; i < oldSize; i++) {

@@ -99,7 +99,6 @@ struct sm_user_func_type {
 
 struct sm_sys_syntax_type {
 	sm_tag tag;
-	sm_func continuation_code;
 	sm_func code;
 	char *name;
 };
@@ -114,7 +113,7 @@ struct sm_stack_entry_struct {
 };
 
 struct sm_env_struct {
-    struct sm_environment *parent;
+    struct sm_env_struct *parent;
     unsigned int used_slots;
     unsigned int allocated_slots;
     struct sm_entry_struct *entries;

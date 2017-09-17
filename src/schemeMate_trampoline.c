@@ -62,7 +62,7 @@ void_ptr_ptr_func contparse_func_eval()
 
 	switch (get_tag(func)) {
 	case TAG_SYS_SYNTAX:
-		return (void_ptr_ptr_func) (*func->sm_sys_syntax.continuation_code)(func_args);
+		return (void_ptr_ptr_func) (*func->sm_sys_syntax.code)(func_args);
 	case TAG_SYS_FUNC:
 	case TAG_USER_FUNC:
 	{
@@ -115,7 +115,10 @@ void_ptr_ptr_func contparse_args_eval()
 		return contparse_initial_eval;
 	}
 
-	// This is the last argument
-	//...
+	// All arguments have been evaluated, we can execute
+	if (func->sm_any.tag == TAG_SYS_FUNC) {
+		(*func->sm_sys_func.code)(nargs);
+		return LOAD_CP();
+	}
 
 }
