@@ -100,6 +100,7 @@ void_ptr_ptr_func contparse_args_eval()
 	data = POP_M();
 	env = POP_M();
 	func = POP_M();
+	PUSH_M(eval_arg);
 
 	// This is the 1+x argument but not the last
 	if (!is_nil(rest_args)) {
@@ -120,5 +121,9 @@ void_ptr_ptr_func contparse_args_eval()
 		(*func->sm_sys_func.code)(nargs);
 		return LOAD_CP();
 	}
+
+
+
+
 
 }
