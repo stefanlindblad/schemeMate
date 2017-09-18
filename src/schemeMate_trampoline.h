@@ -32,5 +32,10 @@ void grow_cp_stack();
 void_ptr_ptr_func contparse_initial_eval();
 void_ptr_ptr_func contparse_func_eval();
 void_ptr_ptr_func contparse_args_eval();
+void_ptr_ptr_func contparse_user_func_eval();
+
+// Built in cp based syntax
+void_ptr_ptr_func contparse_define_front();
+void_ptr_ptr_func contparse_define_back();
 
 #endif // TRAMPOLINE_HEADER

@@ -9,13 +9,13 @@
 static sm_stream INPUT = NULL;
 extern void_ptr_ptr_func contparse_initial_eval();
 
-enum INTERPRETER_MODE {
+static enum INTERPRETER_MODE {
     RECURSIVE = 1,
     CONT_PARSE = 2,
     MAX_MODE = 4
 };
 
-static void init_system();
+static void init_system(int RUNNING_MODE);
 static void recursive_repl();
 static void_ptr_ptr_func contparse_repl_front();
 static void_ptr_ptr_func contparse_repl_back();

@@ -1,13 +1,22 @@
 #include "schemeMate_functions.h"
 
-void init_functions()
+void init_functions(int RUNNING_MODE)
 {
 	// Register Basic Syntax
-	register_system_syntax("define", internal_define);
-	register_system_syntax("set!", internal_set);
-	register_system_syntax("lambda", internal_lambda);
-	register_system_syntax("display", internal_display);
-	register_system_syntax("quote", internal_quote);
+	if (RUNNING_MODE == 1) {
+		register_system_syntax("define", internal_define);
+		register_system_syntax("set!", internal_set);
+		register_system_syntax("lambda", internal_lambda);
+		register_system_syntax("display", internal_display);
+		register_system_syntax("quote", internal_quote);
+	}
+	else if (RUNNING_MODE == 2) {
+		register_system_syntax("define", contparse_define_front);
+		//register_system_syntax("set!", contparse_set_front);
+		//register_system_syntax("lambda", contparse_lambda_front);
+		//register_system_syntax("display", contparse_display_front);
+		//register_system_syntax("quote", contparse_quote_front);
+	}
 
 	// Register Math Functions
 	register_system_function("+", internal_plus);
@@ -45,15 +54,16 @@ void init_functions()
 	register_system_function("cons", internal_cons);
 }
 
-static void assign_symbol(sm_obj args)
+// Helper function for set/define to avoid code duplication
+static void assign_symbol(sm_obj args, sm_env env)
 {
 	sm_obj literal = car(args);
 	sm_obj data = cdr(args);
 
 	if (is_symbol(literal)) {
 		sm_obj object = car(data);
-		sm_obj value = sm_eval(object, MAIN_ENV);
-		add_binding(literal, value, &MAIN_ENV);
+		sm_obj value = sm_eval(object, env);
+		add_binding(literal, value, &env);
 		PUSH(sm_void(), MAIN_STACK);
 		return;
 	}
@@ -63,48 +73,48 @@ static void assign_symbol(sm_obj args)
 		if (is_symbol(object)) {
 			sm_obj args = cdr(literal);
 			sm_obj func = new_user_func(args, data);
-			add_binding(object, func, &MAIN_ENV);
+			add_binding(object, func, &env);
 			PUSH(sm_void(), MAIN_STACK);
 			return;
 		}
 	}
 }
 
-static void internal_define(sm_obj args)
+static void internal_define(sm_obj args, sm_env env)
 {
 	sm_obj literal = car(args);
 	sm_obj entry = sm_nil();
 
 	if (is_symbol(literal))
-		entry = get_binding(literal, MAIN_ENV);
+		entry = get_binding(literal, env);
 
 	if (is_cons(literal))
-		entry = get_binding(car(literal), MAIN_ENV);
+		entry = get_binding(car(literal), env);
 
 	if (entry != NULL)
 		ERROR_CODE("define tried to redefine existing symbol, use set! instead.", 54);
 
-	assign_symbol(args);
+	assign_symbol(args, env);
 }
 
-static void internal_set(sm_obj args)
+static void internal_set(sm_obj args, sm_env env)
 {
 	sm_obj literal = car(args);
 	sm_obj entry = sm_nil();
 
 	if (is_symbol(literal))
-		entry = get_binding(literal, MAIN_ENV);
+		entry = get_binding(literal, env);
 
 	if (is_cons(literal))
-		entry = get_binding(car(literal), MAIN_ENV);
+		entry = get_binding(car(literal), env);
 
 	if (entry == NULL)
 		ERROR_CODE("set tried to define new symbol, use define instead.", 55);
 
-	assign_symbol(args);
+	assign_symbol(args, env);
 }
 
-static void internal_lambda(sm_obj args)
+static void internal_lambda(sm_obj args, sm_env env)
 {
 	if (!is_cons(args))
 	ERROR_CODE("lambda function expects at least 2 arguments.", 45);
@@ -119,7 +129,7 @@ static void internal_lambda(sm_obj args)
 	PUSH(lambda_func, MAIN_STACK);
 }
 
-static void internal_display(sm_obj args)
+static void internal_display(sm_obj args, sm_env env)
 {
 	sm_obj literal = car(args);
 	sm_obj end = cdr(args);
@@ -131,7 +141,7 @@ static void internal_display(sm_obj args)
 	PUSH(sm_void(), MAIN_STACK);
 }
 
-static void internal_quote(sm_obj args)
+static void internal_quote(sm_obj args, sm_env env)
 {
 	PUSH(args, MAIN_STACK);
 }

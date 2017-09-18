@@ -2,7 +2,7 @@
 
 sm_stack MAIN_STACK = NULL;
 
-void init_evaluation()
+void init_evaluation(int RUNNING_MODE)
 {
 	MAIN_STACK = allocate_stack();
 }
@@ -67,7 +67,7 @@ sm_obj sm_eval_list(sm_obj o, sm_env env)
 		while (!is_nil(args)) {
 		    sm_obj nextArg = car(args);
 		    args = cdr(args);
-		    PUSH(sm_eval(nextArg, env), MAIN_STACK);
+		    PUSH_M(sm_eval(nextArg, env));
 		    argc++;
 		}
 		(*obj->sm_sys_func.code)(argc);
@@ -75,6 +75,7 @@ sm_obj sm_eval_list(sm_obj o, sm_env env)
 	}
 	case TAG_SYS_SYNTAX:
 	{
+		PUSH_M(env);
 		(*obj->sm_sys_syntax.code)(args);
 	    return;
 	}
@@ -83,7 +84,7 @@ sm_obj sm_eval_list(sm_obj o, sm_env env)
 		sm_obj func_args = obj->sm_user_func.args;
 		sm_obj func_body = obj->sm_user_func.body;
 		sm_obj body_result = sm_nil();
-		sm_env func_env = allocate_env(20, env); // TODO: check for element size and set accordingly
+		sm_env func_env = allocate_env(INIT_USER_ENV_SIZE, env);
 
 		// Compare layout arguments with given arguments and store evaluated data
 		while (func_args != sm_nil()) {

@@ -4,6 +4,7 @@
 #include "schemeMate_objects.h"
 
 #define INIT_EVALUATION_STACK_SIZE 1024
+#define INIT_USER_ENV_SIZE 10
 
 static int callDepth = 0;
 
@@ -59,7 +60,7 @@ static inline void DROP(int amount, sm_stack s)
 		ERROR_CODE("Evaluation Stack Underflow!", 48);
 }
 
-void init_evaluation();
+void init_evaluation(int RUNNING_MODE);
 sm_stack allocate_stack();
 void sm_eval_intern(sm_obj o, sm_env env);
 sm_obj sm_eval(sm_obj o, sm_env env);

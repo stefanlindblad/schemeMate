@@ -1,6 +1,6 @@
 #include "schemeMate_main.h"
 
-void init_system() {
+void init_system(int RUNNING_MODE) {
     INPUT = new_file_stream(stdin);
 }
 
@@ -56,13 +56,13 @@ int main(int argc, char *argv[])
 			RUNNING_MODE = RECURSIVE;
 	}
 
-	init_system();
-	init_memory();
-	init_environment();
-	init_evaluation();
+	init_system(RUNNING_MODE);
+	init_memory(RUNNING_MODE);
+	init_environment(RUNNING_MODE);
+	init_evaluation(RUNNING_MODE);
 	if (RUNNING_MODE == CONT_PARSE)
 		init_trampoline();
-	init_functions();
+	init_functions(RUNNING_MODE);
 	sm_selftest();
 	PRINT_LINE("Welcome to schemeMate [0.2]");
 	if (RUNNING_MODE == RECURSIVE)

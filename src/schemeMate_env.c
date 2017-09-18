@@ -2,7 +2,7 @@
 
 sm_env MAIN_ENV = NULL;
 
-void init_environment()
+void init_environment(int RUNNING_MODE)
 {
 	MAIN_ENV = allocate_env(ENV_INIT_SIZE, NULL);
 }

@@ -62,7 +62,7 @@ void_ptr_ptr_func contparse_func_eval()
 
 	switch (get_tag(func)) {
 	case TAG_SYS_SYNTAX:
-		return (void_ptr_ptr_func) (*func->sm_sys_syntax.code)(func_args);
+		return (void_ptr_ptr_func) (*func->sm_sys_syntax.code)(func_args, env);
 	case TAG_SYS_FUNC:
 	case TAG_USER_FUNC:
 	{
@@ -122,8 +122,97 @@ void_ptr_ptr_func contparse_args_eval()
 		return LOAD_CP();
 	}
 
+	PUSH_M(env);
+	PUSH_M(func);
+	PUSH_M(new_int(nargs));
+	SAVE_CP(contparse_user_func_eval);
+	return contparse_initial_eval;
+}
 
+void_ptr_ptr_func contparse_user_func_eval()
+{
+	sm_obj env, func, nargs_obj;
 
+	nargs_obj = POP_M();
+	func = POP_M();
+	env = POP_M();
+	int nargs = int_val(nargs_obj);
 
+	// Create environment for user function
+	sm_obj func_args = func->sm_user_func.args;
+	sm_obj func_body = func->sm_user_func.body;
+	sm_obj body_result = sm_nil();
+	sm_env func_env = allocate_env(INIT_USER_ENV_SIZE, MAIN_ENV);
 
+	// Register bindings for arguments in function env
+	sm_obj next_arg = func_args;
+	while (!is_nil(next_arg)) {
+		sm_obj name = car(next_arg);
+		sm_obj next_arg = cdr(next_arg);
+
+		sm_obj data = POP_M();
+		add_binding(name, data, func_env);
+	}
+}
+
+// Built in cp based syntax
+
+// Helper function for contparse set/define to avoid code duplication
+static void assign_symbol(sm_obj literal, sm_obj args, sm_env env)
+{
+	sm_obj data = cdr(args);
+
+	if (is_symbol(literal)) {
+		sm_obj object = car(data);
+		sm_obj value = sm_eval(object, env);
+		add_binding(literal, value, &env);
+		PUSH(sm_void(), MAIN_STACK);
+		return;
+	}
+
+	if (is_cons(literal)) {
+		sm_obj object = car(literal);
+		if (is_symbol(object)) {
+			sm_obj args = cdr(literal);
+			sm_obj func = new_user_func(args, data);
+			add_binding(object, func, &env);
+			PUSH(sm_void(), MAIN_STACK);
+			return;
+		}
+	}
+}
+
+void_ptr_ptr_func contparse_define_front(sm_obj args, sm_env env)
+{
+	sm_obj literal = car(car(args));
+	sm_obj entry = sm_nil();
+
+	if (is_symbol(literal))
+		entry = get_binding(literal, env);
+
+	if (is_cons(literal))
+		entry = get_binding(car(literal), env);
+
+	if (entry != NULL)
+		ERROR_CODE("define tried to redefine existing symbol, use set! instead.", 54);
+
+	PUSH_M(env);
+	PUSH_M(literal);
+	PUSH_M(env);
+	PUSH_M(cdr(args));
+	SAVE_CP(contparse_define_back);
+	return contparse_initial_eval;
+}
+
+void_ptr_ptr_func contparse_define_back()
+{
+	sm_obj env, obj, args;
+
+	args = POP_M();
+	obj = POP_M();
+	env = POP_M();
+
+	assign_symbol(obj, args, env);
+	PUSH_M(sm_void());
+	return LOAD_CP();
 }
