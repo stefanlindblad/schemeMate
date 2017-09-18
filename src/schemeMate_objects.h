@@ -16,7 +16,6 @@ typedef void* (*void_ptr_func)();
 typedef void_ptr_func (*void_ptr_ptr_func)();
 typedef struct sm_entry_struct* sm_entry;
 typedef struct sm_stack_entry_struct* sm_stack_entry;
-typedef struct sm_env_struct* sm_env;
 typedef struct sm_stack_struct* sm_stack;
 typedef enum { false, true } bool;
 
@@ -53,6 +52,7 @@ enum sm_tag_type
 	TAG_SYS_FUNC,
 	TAG_SYS_SYNTAX,
 	TAG_USER_FUNC,
+	TAG_ENV,
 	TAG_MAX
 };
 
@@ -103,6 +103,14 @@ struct sm_sys_syntax_type {
 	char *name;
 };
 
+struct sm_env_type {
+	sm_tag tag;
+    struct sm_env_type *parent;
+    unsigned int used_slots;
+    unsigned int allocated_slots;
+    struct sm_entry_struct *entries;
+};
+
 struct sm_entry_struct {
     sm_obj key;
     sm_obj value;
@@ -110,13 +118,6 @@ struct sm_entry_struct {
 
 struct sm_stack_entry_struct {
     sm_obj entry;
-};
-
-struct sm_env_struct {
-    struct sm_env_struct *parent;
-    unsigned int used_slots;
-    unsigned int allocated_slots;
-    struct sm_entry_struct *entries;
 };
 
 struct sm_stack_struct {
@@ -135,10 +136,11 @@ union sm_object {
 	struct sm_sys_func_type sm_sys_func;
 	struct sm_sys_syntax_type sm_sys_syntax;
 	struct sm_user_func_type sm_user_func;
+	struct sm_env_type sm_env;
 };
 
 // program wide data
-extern sm_env MAIN_ENV;
+extern sm_obj MAIN_ENV;
 extern sm_stack MAIN_STACK;
 
 // Type checks

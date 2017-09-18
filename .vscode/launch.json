@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${workspaceRoot}/schemeMate.exe",
             "miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe",
-            "args": [],
+            "args": ["--recursive"],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}",
             "environment": [],

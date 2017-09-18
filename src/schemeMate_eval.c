@@ -26,7 +26,7 @@ sm_stack allocate_stack()
 	return stack;
 }
 
-void sm_eval_intern(sm_obj o, sm_env env) 
+void sm_eval_intern(sm_obj o, sm_obj env)
 {
     sm_obj obj;
     switch (get_tag(o)) {
@@ -48,13 +48,13 @@ void sm_eval_intern(sm_obj o, sm_env env)
 	return POP(MAIN_STACK);
 }
 
-sm_obj sm_eval(sm_obj o, sm_env env)
+sm_obj sm_eval(sm_obj o, sm_obj env)
 {
 	sm_eval_intern(o, env);
 	return POP(MAIN_STACK);
 }
 
-sm_obj sm_eval_list(sm_obj o, sm_env env) 
+sm_obj sm_eval_list(sm_obj o, sm_obj env)
 {
 	sm_obj func = car(o);
 	sm_obj args = cdr(o);
@@ -84,7 +84,7 @@ sm_obj sm_eval_list(sm_obj o, sm_env env)
 		sm_obj func_args = obj->sm_user_func.args;
 		sm_obj func_body = obj->sm_user_func.body;
 		sm_obj body_result = sm_nil();
-		sm_env func_env = allocate_env(INIT_USER_ENV_SIZE, env);
+		sm_obj func_env = allocate_env(INIT_USER_ENV_SIZE, env);
 
 		// Compare layout arguments with given arguments and store evaluated data
 		while (func_args != sm_nil()) {

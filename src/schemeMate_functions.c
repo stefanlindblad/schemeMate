@@ -55,7 +55,7 @@ void init_functions(int RUNNING_MODE)
 }
 
 // Helper function for set/define to avoid code duplication
-static void assign_symbol(sm_obj args, sm_env env)
+static void assign_symbol(sm_obj args, sm_obj env)
 {
 	sm_obj literal = car(args);
 	sm_obj data = cdr(args);
@@ -80,7 +80,7 @@ static void assign_symbol(sm_obj args, sm_env env)
 	}
 }
 
-static void internal_define(sm_obj args, sm_env env)
+static void internal_define(sm_obj args, sm_obj env)
 {
 	sm_obj literal = car(args);
 	sm_obj entry = sm_nil();
@@ -97,7 +97,7 @@ static void internal_define(sm_obj args, sm_env env)
 	assign_symbol(args, env);
 }
 
-static void internal_set(sm_obj args, sm_env env)
+static void internal_set(sm_obj args, sm_obj env)
 {
 	sm_obj literal = car(args);
 	sm_obj entry = sm_nil();
@@ -114,7 +114,7 @@ static void internal_set(sm_obj args, sm_env env)
 	assign_symbol(args, env);
 }
 
-static void internal_lambda(sm_obj args, sm_env env)
+static void internal_lambda(sm_obj args, sm_obj env)
 {
 	if (!is_cons(args))
 	ERROR_CODE("lambda function expects at least 2 arguments.", 45);
@@ -129,7 +129,7 @@ static void internal_lambda(sm_obj args, sm_env env)
 	PUSH(lambda_func, MAIN_STACK);
 }
 
-static void internal_display(sm_obj args, sm_env env)
+static void internal_display(sm_obj args, sm_obj env)
 {
 	sm_obj literal = car(args);
 	sm_obj end = cdr(args);
@@ -141,7 +141,7 @@ static void internal_display(sm_obj args, sm_env env)
 	PUSH(sm_void(), MAIN_STACK);
 }
 
-static void internal_quote(sm_obj args, sm_env env)
+static void internal_quote(sm_obj args, sm_obj env)
 {
 	PUSH(args, MAIN_STACK);
 }

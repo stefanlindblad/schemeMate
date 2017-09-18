@@ -33,6 +33,8 @@ void_ptr_ptr_func contparse_initial_eval();
 void_ptr_ptr_func contparse_func_eval();
 void_ptr_ptr_func contparse_args_eval();
 void_ptr_ptr_func contparse_user_func_eval();
+void_ptr_ptr_func contparse_body_start_eval();
+void_ptr_ptr_func contparse_body_cont_eval();
 
 // Built in cp based syntax
 void_ptr_ptr_func contparse_define_front();

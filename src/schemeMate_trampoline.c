@@ -24,8 +24,7 @@ void grow_cp_stack()
 
 void_ptr_ptr_func contparse_initial_eval()
 {
-	sm_obj expr, obj;
-	sm_env env;
+	sm_obj expr, obj, env;
 
 	expr = POP_M();
     env = POP_M();
@@ -54,8 +53,7 @@ void_ptr_ptr_func contparse_initial_eval()
 
 void_ptr_ptr_func contparse_func_eval()
 {
-	sm_obj data, func, func_args;
-	sm_env env;
+	sm_obj data, func, func_args, env;
 
 	func = POP_M();
 	data = POP_M();
@@ -68,8 +66,9 @@ void_ptr_ptr_func contparse_func_eval()
 	case TAG_SYS_FUNC:
 	case TAG_USER_FUNC:
 	{
-		if (is_nil(func_args) && get_tag(func) == TAG_SYS_FUNC) {
-			(*func->sm_sys_func.code)(0);
+		if (is_nil(func_args)) {
+			if (get_tag(func) == TAG_SYS_FUNC)
+				(*func->sm_sys_func.code)(0);
 			return LOAD_CP();
 		}
 		
@@ -78,8 +77,7 @@ void_ptr_ptr_func contparse_func_eval()
 		PUSH_M(env);
 		PUSH_M(data);
 		PUSH_M(cdr(func_args));
-		PUSH_M(new_int(0)); // Counter for first argument
-
+		PUSH_M(new_int(0));
 		PUSH_M(env);
 		PUSH_M(car(func_args));
 		SAVE_CP(contparse_args_eval);
@@ -93,8 +91,7 @@ void_ptr_ptr_func contparse_func_eval()
 
 void_ptr_ptr_func contparse_args_eval()
 {
-	sm_obj data, func, eval_arg, rest_args, num_args;
-	sm_env env;
+	sm_obj data, func, eval_arg, rest_args, num_args, env;
 
 	eval_arg = POP_M();
 	num_args = POP_M();
@@ -125,9 +122,9 @@ void_ptr_ptr_func contparse_args_eval()
 		return LOAD_CP();
 	}
 
+	PUSH_M(new_int(nargs));
 	PUSH_M(env);
 	PUSH_M(func);
-	PUSH_M(new_int(nargs));
 	SAVE_CP(contparse_user_func_eval);
 	return contparse_initial_eval;
 }
@@ -135,35 +132,87 @@ void_ptr_ptr_func contparse_args_eval()
 void_ptr_ptr_func contparse_user_func_eval()
 {
 	sm_obj func, nargs_obj;
-	sm_env env;
 
-	nargs_obj = POP_M();
 	func = POP_M();
-	env = POP_M();
+	nargs_obj = POP_M();
 	int nargs = int_val(nargs_obj);
 
 	// Create environment for user function
 	sm_obj func_args = func->sm_user_func.args;
 	sm_obj func_body = func->sm_user_func.body;
 	sm_obj body_result = sm_nil();
-	sm_env func_env = allocate_env(INIT_USER_ENV_SIZE, MAIN_ENV);
+	sm_obj func_env = allocate_env(INIT_USER_ENV_SIZE, MAIN_ENV);
 
-	// Register bindings for arguments in function env
-	sm_obj next_arg = func_args;
-	while (!is_nil(next_arg)) {
-		sm_obj name = car(next_arg);
-		sm_obj next_arg = cdr(next_arg);
-
-		sm_obj data = POP_M();
-		add_binding(name, data, func_env);
+	while (nargs-- > 0) {
+		sm_obj arg_name = car(func_args);
+		func_args = cdr(func_args);
+		sm_obj arg_input = POP_M();
+		sm_obj arg_value = sm_eval(arg_input, func_env);
+		add_binding(arg_name, arg_value, &func_env);
 	}
+
+	PUSH_M(func_env);
+	PUSH_M(func_body);
+	return contparse_body_start_eval;
+}
+
+void_ptr_ptr_func contparse_body_start_eval()
+{
+	sm_obj env, body;
+
+	body = POP_M();
+	env = POP_M();
+
+	if(is_nil(cdr(body))) {
+		PUSH_M(env);
+		PUSH_M(car(body));
+		return contparse_initial_eval;
+	}
+
+	// Save rest of body to evaluate
+	PUSH_M(env);
+	PUSH_M(cdr(body));
+
+	// Evaluate the next one
+	PUSH_M(env);
+	PUSH_M(car(body));
+
+	SAVE_CP(contparse_body_cont_eval);
+	return contparse_initial_eval;
+}
+
+void_ptr_ptr_func contparse_body_cont_eval()
+{
+	sm_obj env, body, last;
+
+	last =  POP_M();
+	body = POP_M();
+	env = POP_M();
+
+	if(is_nil(cdr(body))) {
+		PUSH_M(env);
+		PUSH_M(car(body));
+		return contparse_initial_eval;
+	}
+
+	// Save rest of body to evaluate
+	PUSH_M(env);
+	PUSH_M(cdr(body));
+
+	// Evaluate the next one
+	PUSH_M(env);
+	PUSH_M(car(body));
+
+	SAVE_CP(contparse_body_cont_eval);
+	return contparse_initial_eval;
 }
 
 // Built in cp based syntax
 
 // Helper function for contparse set/define to avoid code duplication
-static void assign_symbol(sm_obj literal, sm_obj args, sm_env env)
+static void assign_symbol(sm_obj args, sm_obj env)
 {
+	sm_obj literal = car(args);
 	sm_obj data = cdr(args);
 
 	if (is_symbol(literal)) {
@@ -178,7 +227,7 @@ static void assign_symbol(sm_obj literal, sm_obj args, sm_env env)
 		sm_obj object = car(literal);
 		if (is_symbol(object)) {
 			sm_obj args = cdr(literal);
-			sm_obj func = new_user_func(args, data);
+			sm_obj func = new_user_func(args, car(data));
 			add_binding(object, func, &env);
 			PUSH(sm_void(), MAIN_STACK);
 			return;
@@ -186,7 +235,7 @@ static void assign_symbol(sm_obj literal, sm_obj args, sm_env env)
 	}
 }
 
-void_ptr_ptr_func contparse_define_front(sm_obj args, sm_env env)
+void_ptr_ptr_func contparse_define_front(sm_obj args, sm_obj env)
 {
 	sm_obj literal = car(car(args));
 	sm_obj entry = sm_nil();
@@ -201,22 +250,19 @@ void_ptr_ptr_func contparse_define_front(sm_obj args, sm_env env)
 		ERROR_CODE("define tried to redefine existing symbol, use set! instead.", 54);
 
 	PUSH_M(env);
-	PUSH_M(literal);
-	PUSH_M(cdr(args));
+	PUSH_M(args);
 	SAVE_CP(contparse_initial_eval);
 	return contparse_define_back;
 }
 
 void_ptr_ptr_func contparse_define_back()
 {
-	sm_obj obj, args;
-	sm_env env;
+	sm_obj args, env;
 
 	args = POP_M();
-	obj = POP_M();
 	env = POP_M();
 
-	assign_symbol(obj, args, env);
+	assign_symbol(args, env);
 	PUSH_M(sm_void());
 	return LOAD_CP();
 }

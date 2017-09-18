@@ -8,11 +8,11 @@
 void init_functions(int RUNNING_MODE);
 
 // Basic Syntax
-static void internal_define(sm_obj args, sm_env env);
-static void internal_set(sm_obj args, sm_env env);
-static void internal_lambda(sm_obj args, sm_env env);
-static void internal_display(sm_obj args, sm_env env);
-static void internal_quote(sm_obj args, sm_env env);
+static void internal_define(sm_obj args, sm_obj env);
+static void internal_set(sm_obj args, sm_obj env);
+static void internal_lambda(sm_obj args, sm_obj env);
+static void internal_display(sm_obj args, sm_obj env);
+static void internal_quote(sm_obj args, sm_obj env);
 
 // Math Functionality
 static void internal_plus(int argc);
