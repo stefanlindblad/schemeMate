@@ -76,7 +76,7 @@ sm_obj sm_eval_list(sm_obj o, sm_env env)
 	case TAG_SYS_SYNTAX:
 	{
 		PUSH_M(env);
-		(*obj->sm_sys_syntax.code)(args);
+		(*obj->sm_sys_syntax.code)(args, env);
 	    return;
 	}
 	case TAG_USER_FUNC:

@@ -64,7 +64,12 @@ int main(int argc, char *argv[])
 		init_trampoline();
 	init_functions(RUNNING_MODE);
 	sm_selftest();
-	PRINT_LINE("Welcome to schemeMate [0.2]");
+
+	if (RUNNING_MODE == CONT_PARSE)
+		PRINT_LINE("Welcome to schemeMate - Continuation Parsing Edition");
+	else if (RUNNING_MODE == RECURSIVE)
+		PRINT_LINE("Welcome to schemeMate - Recursive Edition");
+
 	if (RUNNING_MODE == RECURSIVE)
 		recursive_repl();
 	else if (RUNNING_MODE == CONT_PARSE) {

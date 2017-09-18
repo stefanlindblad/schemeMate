@@ -24,7 +24,8 @@ void grow_cp_stack()
 
 void_ptr_ptr_func contparse_initial_eval()
 {
-    sm_obj expr, env, obj;
+	sm_obj expr, obj;
+	sm_env env;
 
 	expr = POP_M();
     env = POP_M();
@@ -53,7 +54,8 @@ void_ptr_ptr_func contparse_initial_eval()
 
 void_ptr_ptr_func contparse_func_eval()
 {
-	sm_obj env, data, func, func_args;
+	sm_obj data, func, func_args;
+	sm_env env;
 
 	func = POP_M();
 	data = POP_M();
@@ -91,7 +93,8 @@ void_ptr_ptr_func contparse_func_eval()
 
 void_ptr_ptr_func contparse_args_eval()
 {
-	sm_obj env, data, func, eval_arg, rest_args, num_args;
+	sm_obj data, func, eval_arg, rest_args, num_args;
+	sm_env env;
 
 	eval_arg = POP_M();
 	num_args = POP_M();
@@ -131,7 +134,8 @@ void_ptr_ptr_func contparse_args_eval()
 
 void_ptr_ptr_func contparse_user_func_eval()
 {
-	sm_obj env, func, nargs_obj;
+	sm_obj func, nargs_obj;
+	sm_env env;
 
 	nargs_obj = POP_M();
 	func = POP_M();
@@ -198,15 +202,15 @@ void_ptr_ptr_func contparse_define_front(sm_obj args, sm_env env)
 
 	PUSH_M(env);
 	PUSH_M(literal);
-	PUSH_M(env);
 	PUSH_M(cdr(args));
-	SAVE_CP(contparse_define_back);
-	return contparse_initial_eval;
+	SAVE_CP(contparse_initial_eval);
+	return contparse_define_back;
 }
 
 void_ptr_ptr_func contparse_define_back()
 {
-	sm_obj env, obj, args;
+	sm_obj obj, args;
+	sm_env env;
 
 	args = POP_M();
 	obj = POP_M();
