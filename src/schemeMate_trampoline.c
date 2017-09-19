@@ -185,7 +185,7 @@ void_ptr_ptr_func contparse_body_cont_eval()
 {
 	sm_obj env, body, last;
 
-	last =  POP_M();
+	last = POP_M();
 	body = POP_M();
 	env = POP_M();
 
@@ -227,7 +227,7 @@ static void assign_symbol(sm_obj args, sm_obj env)
 		sm_obj object = car(literal);
 		if (is_symbol(object)) {
 			sm_obj args = cdr(literal);
-			sm_obj func = new_user_func(args, car(data));
+			sm_obj func = new_user_func(args, data);
 			add_binding(object, func, &env);
 			PUSH(sm_void(), MAIN_STACK);
 			return;
