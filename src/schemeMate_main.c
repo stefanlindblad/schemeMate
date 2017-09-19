@@ -28,8 +28,8 @@ void_ptr_ptr_func contparse_repl_front()
 	expr = sm_read(INPUT, true);
 	PUSH_M(MAIN_ENV);
 	PUSH_M(expr);
-	SAVE_CP((void_ptr_ptr_func) contparse_repl_back);
-	return (void_ptr_ptr_func) contparse_initial_eval;
+	SAVE_CP(contparse_repl_back);
+	return contparse_initial_eval;
 }
 
 void_ptr_ptr_func contparse_repl_back()
@@ -41,7 +41,7 @@ void_ptr_ptr_func contparse_repl_back()
 		PRINT("\n");
 		PRINT(">>> ");
 	}
-	return (void_ptr_ptr_func) contparse_repl_front;
+	return contparse_repl_front;
 }
 
 int main(int argc, char *argv[])
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 		recursive_repl();
 	else if (RUNNING_MODE == CONT_PARSE) {
 		PRINT(">>> ");
-		execute_trampoline((void_ptr_ptr_func) contparse_repl_front);
+		execute_trampoline(contparse_repl_front);
 	}
 	exit(0);
 }

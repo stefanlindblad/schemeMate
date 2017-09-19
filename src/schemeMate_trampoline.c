@@ -62,7 +62,7 @@ void_ptr_ptr_func contparse_func_eval()
 
 	switch (get_tag(func)) {
 	case TAG_SYS_SYNTAX:
-		return (void_ptr_ptr_func) (*func->sm_sys_syntax.code)(func_args, env);
+		return (*func->sm_sys_syntax.code)(func_args, env);
 	case TAG_SYS_FUNC:
 	case TAG_USER_FUNC:
 	{
