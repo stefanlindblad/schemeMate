@@ -345,3 +345,48 @@ void_ptr_ptr_func contparse_quote(sm_obj args, sm_obj env)
 	PUSH_M(args);
 	return LOAD_CP();
 }
+
+void_ptr_ptr_func contparse_if_front(sm_obj args, sm_obj env)
+{
+	if (!is_cons(args))
+		ERROR_CODE("if function expects at least 2 arguments.", 45);
+
+	sm_obj test_cond = car(args);
+	sm_obj true_cond = car(cdr(args));
+	sm_obj false_cond = cdr(cdr(args));
+	sm_obj result = sm_eval(test_cond, MAIN_ENV);
+
+	PUSH_M(env);
+	PUSH_M(result);
+	PUSH_M(true_cond);
+	PUSH_M(false_cond);
+	SAVE_CP(contparse_initial_eval);
+	return contparse_if_back;
+}
+
+void_ptr_ptr_func contparse_if_back()
+{
+	sm_obj env, result, true_cond, false_cond;
+
+	false_cond = POP_M();
+	true_cond = POP_M();
+	result = POP_M();
+	env = POP_M();
+
+	if (result == sm_true() || (is_int(result) && int_val(result) > 0)) {
+		sm_obj true_branch = sm_eval(true_cond, MAIN_ENV);
+		PUSH_M(true_branch);
+		//SAVE_CP(contparse_repl_front);
+		return LOAD_CP();
+	}
+
+	else if(false_cond != sm_nil()) {
+		sm_obj false_branch = sm_eval(false_cond, MAIN_ENV);
+		PUSH_M(false_branch);
+		//SAVE_CP(contparse_repl_front);
+		return LOAD_CP();
+	}
+	PUSH_M(sm_void());
+	//SAVE_CP(contparse_repl_front);
+	return LOAD_CP();
+}

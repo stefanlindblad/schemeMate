@@ -45,5 +45,7 @@ void_ptr_ptr_func contparse_set_back();
 void_ptr_ptr_func contparse_lambda();
 void_ptr_ptr_func contparse_display();
 void_ptr_ptr_func contparse_quote();
+void_ptr_ptr_func contparse_if_front();
+void_ptr_ptr_func contparse_if_back();
 
 #endif // TRAMPOLINE_HEADER

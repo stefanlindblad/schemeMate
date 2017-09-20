@@ -14,6 +14,7 @@ static void internal_lambda(sm_obj args, sm_obj env);
 static void internal_display(sm_obj args, sm_obj env);
 static void internal_quote(sm_obj args, sm_obj env);
 static void internal_mode(sm_obj args, sm_obj env);
+static void internal_if(sm_obj args, sm_obj env);
 
 // Math Functionality
 static void internal_plus(int argc);

@@ -9,6 +9,7 @@ void init_functions(int running_mode)
 		register_system_syntax("lambda", internal_lambda);
 		register_system_syntax("display", internal_display);
 		register_system_syntax("quote", internal_quote);
+		register_system_syntax("if", internal_if);
 	}
 	else if (running_mode == 2) {
 		register_system_syntax("define", contparse_define_front);
@@ -16,6 +17,7 @@ void init_functions(int running_mode)
 		register_system_syntax("lambda", contparse_lambda);
 		register_system_syntax("display", contparse_display);
 		register_system_syntax("quote", contparse_quote);
+		register_system_syntax("if", contparse_if_front);
 	}
 	register_system_syntax("mode", internal_mode);
 
@@ -135,7 +137,7 @@ static void internal_set(sm_obj args, sm_obj env)
 static void internal_lambda(sm_obj args, sm_obj env)
 {
 	if (!is_cons(args))
-	ERROR_CODE("lambda function expects at least 2 arguments.", 45);
+		ERROR_CODE("lambda function expects at least 2 arguments.", 45);
 
 	sm_obj lambda_args = car(args);
 	sm_obj body_args = cdr(args);
@@ -162,6 +164,30 @@ static void internal_display(sm_obj args, sm_obj env)
 static void internal_quote(sm_obj args, sm_obj env)
 {
 	PUSH_M(args);
+}
+
+static void internal_if(sm_obj args, sm_obj env)
+{
+	if (!is_cons(args))
+		ERROR_CODE("if function expects at least 2 arguments.", 45);
+
+	sm_obj test_cond = car(args);
+	sm_obj true_cond = car(cdr(args));
+	sm_obj false_cond = cdr(cdr(args));
+	sm_obj result = sm_eval(test_cond, MAIN_ENV);
+
+	if (test_cond == sm_true() || (is_int(result) && int_val(result) > 0)) {
+		sm_obj true_branch = sm_eval(true_cond, MAIN_ENV);
+		PUSH_M(true_branch);
+		return;
+	}
+
+	else if(false_cond != sm_nil()) {
+		sm_obj false_branch = sm_eval(false_cond, MAIN_ENV);
+		PUSH_M(false_branch);
+		return;
+	}
+	PUSH_M(sm_void());
 }
 
 static void internal_plus(int argc)

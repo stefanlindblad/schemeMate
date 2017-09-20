@@ -110,9 +110,12 @@ sm_obj sm_eval_list(sm_obj o, sm_obj env)
 			func_body = cdr(func_body);
 			body_result = sm_eval(body_data, func_env);
 		}
-		PUSH(body_result, MAIN_STACK);
+		PUSH_M(body_result);
 	    return;
 	}
+	case TAG_VOID:
+		PUSH_M(sm_void());
+		return;
 	default:
 	    ERROR_CODE("Unknown function reference.", 53);
     }
