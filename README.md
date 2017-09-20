@@ -48,6 +48,7 @@ The json config files would need to be adopted to your compiler location.
 * car - Returns head element of a list
 * cdr - Returns tail element of a list
 * cons - Constructs a new list from given element and list
+* list - Constructs a list from the given arguments
 
 ### Implemented type check functions:  
 * int? - All parameters int type?

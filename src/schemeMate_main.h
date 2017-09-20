@@ -20,7 +20,7 @@ static void recursive_repl();
 static void_ptr_ptr_func contparse_repl_front();
 static void_ptr_ptr_func contparse_repl_back();
 void init_all_systems(int running_mode);
-void restart_all_systems();
+void restart_all_systems(int mode);
 void shutdown_all_systems();
 int main(int argc, char *argv[]);
 
