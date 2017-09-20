@@ -57,7 +57,8 @@ The json config files would need to be adopted to your compiler location.
 * neg? - All parameters negative?
 
 ### Implemented utility functions:  
-* display / ' - prints the given input without evaluating it
+* display - prints the given input to the console
+* ' - uses the given input without evaluating it
 * exit - exits the program with the given error code
 * define - define new symbols or functions
 * set! - override existing symbols or functions
@@ -67,4 +68,4 @@ The json config files would need to be adopted to your compiler location.
 * No garbage collection currently
 * Only supports integers
 
-// Stefan Seibert, in the Summer 2017
+// Stefan Seibert, September 2017

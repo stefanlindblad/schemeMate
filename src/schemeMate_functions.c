@@ -14,8 +14,8 @@ void init_functions(int running_mode)
 		register_system_syntax("define", contparse_define_front);
 		register_system_syntax("set!", contparse_set_front);
 		register_system_syntax("lambda", contparse_lambda);
-		//register_system_syntax("display", contparse_display_front);
-		//register_system_syntax("quote", contparse_quote_front);
+		register_system_syntax("display", contparse_display);
+		register_system_syntax("quote", contparse_quote);
 	}
 	register_system_syntax("mode", internal_mode);
 
@@ -155,12 +155,12 @@ static void internal_display(sm_obj args, sm_obj env)
 		ERROR_CODE("display function expects exactly 1 argument.", 45);
 
 	sm_print(literal, true);
-	PUSH(sm_void(), MAIN_STACK);
+	PUSH_M(sm_void());
 }
 
 static void internal_quote(sm_obj args, sm_obj env)
 {
-	PUSH(args, MAIN_STACK);
+	PUSH_M(args);
 }
 
 static void internal_plus(int argc)
@@ -727,12 +727,12 @@ static void internal_cons(int argc)
 	sm_obj rest = POP(MAIN_STACK);
 	sm_obj first = POP(MAIN_STACK);
 
-	if (!is_cons(rest))
+	if (!is_cons(rest) && !is_nil(rest))
 		ERROR_CODE("cons function only adds to lists", 45);
 
 	sm_obj result;
 
-	if (is_nil(car(rest)))
+	if (is_nil(rest) || is_nil(car(rest)))
 		result = new_cons(first, sm_nil());
 	else
 		result = new_cons(first, rest);

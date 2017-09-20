@@ -326,3 +326,22 @@ void_ptr_ptr_func contparse_lambda(sm_obj args, sm_obj env)
 	PUSH_M(lambda_func);
 	return LOAD_CP();
 }
+
+void_ptr_ptr_func contparse_display(sm_obj args, sm_obj env)
+{
+	sm_obj literal = car(args);
+	sm_obj end = cdr(args);
+
+	if (end != sm_nil())
+		ERROR_CODE("display function expects exactly 1 argument.", 45);
+
+	sm_print(literal, true);
+	PUSH_M(sm_void());
+	return LOAD_CP();
+}
+
+void_ptr_ptr_func contparse_quote(sm_obj args, sm_obj env)
+{
+	PUSH_M(args);
+	return LOAD_CP();
+}
