@@ -53,6 +53,7 @@ void init_functions(int running_mode)
 	register_system_function("car", internal_car);
 	register_system_function("cdr", internal_cdr);
 	register_system_function("cons", internal_cons);
+	register_system_function("list", internal_list);
 }
 
 // Helper function for set/define to avoid code duplication
@@ -737,5 +738,22 @@ static void internal_cons(int argc)
 	else
 		result = new_cons(first, rest);
 
-	PUSH(result, MAIN_STACK);
+	PUSH_M(result);
+}
+
+static void internal_list(int argc)
+{
+	if (argc < 1)
+		ERROR_CODE("list function expects at least 1 argument.", 45);
+
+	sm_obj value = POP_M();
+	sm_obj list = new_cons(value, sm_nil());
+	--argc;
+
+	while (argc > 0) {
+		sm_obj value = POP_M();
+		list = new_cons(value, list);
+		--argc;
+	}
+	PUSH_M(list);
 }

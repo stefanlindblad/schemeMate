@@ -208,4 +208,12 @@ static inline sm_obj cdr(sm_obj obj) {
     return (obj->sm_cons.cdr);
 }
 
+static inline void set_car(sm_obj obj, sm_obj car) {
+    obj->sm_cons.car = car;
+}
+
+static inline void set_cdr(sm_obj obj, sm_obj cdr) {
+    obj->sm_cons.cdr = cdr;
+}
+
 #endif // OBJECTS_HEADER

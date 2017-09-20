@@ -48,6 +48,7 @@ static void internal_is_negative(int argc);
 static void internal_car(int argc);
 static void internal_cdr(int argc);
 static void internal_cons(int argc);
+static void internal_list(int argc);
 
 // Helper Functionality
 static void internal_exit(int argc);
