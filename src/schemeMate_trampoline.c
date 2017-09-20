@@ -237,14 +237,16 @@ static void assign_symbol(sm_obj args, sm_obj env)
 
 void_ptr_ptr_func contparse_define_front(sm_obj args, sm_obj env)
 {
-	sm_obj literal = car(car(args));
+	sm_obj literal = car(args);
 	sm_obj entry = sm_nil();
 
 	if (is_symbol(literal))
 		entry = get_binding(literal, env);
 
-	if (is_cons(literal))
+	if (is_cons(literal)) {
 		entry = get_binding(car(literal), env);
+		literal = car(literal);
+	}
 
 	if (entry != NULL)
 		ERROR_CODE("define tried to redefine existing symbol, use set! instead.", 54);
@@ -256,6 +258,40 @@ void_ptr_ptr_func contparse_define_front(sm_obj args, sm_obj env)
 }
 
 void_ptr_ptr_func contparse_define_back()
+{
+	sm_obj args, env;
+
+	args = POP_M();
+	env = POP_M();
+
+	assign_symbol(args, env);
+	PUSH_M(sm_void());
+	return LOAD_CP();
+}
+
+void_ptr_ptr_func contparse_set_front(sm_obj args, sm_obj env)
+{
+	sm_obj literal = car(args);
+	sm_obj entry = sm_nil();
+
+	if (is_symbol(literal))
+	entry = get_binding(literal, env);
+
+	if (is_cons(literal)) {
+		entry = get_binding(car(literal), env);
+		literal = car(literal);
+	}
+
+	if (entry == NULL)
+		ERROR_CODE("set tried to set non-existing symbol, use define instead.", 54);
+
+	PUSH_M(env);
+	PUSH_M(args);
+	SAVE_CP(contparse_initial_eval);
+	return contparse_set_back;
+}
+
+void_ptr_ptr_func contparse_set_back()
 {
 	sm_obj args, env;
 

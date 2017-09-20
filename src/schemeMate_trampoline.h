@@ -39,5 +39,7 @@ void_ptr_ptr_func contparse_body_cont_eval();
 // Built in cp based syntax
 void_ptr_ptr_func contparse_define_front();
 void_ptr_ptr_func contparse_define_back();
+void_ptr_ptr_func contparse_set_front();
+void_ptr_ptr_func contparse_set_back();
 
 #endif // TRAMPOLINE_HEADER

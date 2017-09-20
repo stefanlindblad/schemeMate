@@ -12,7 +12,7 @@ void init_functions(int RUNNING_MODE)
 	}
 	else if (RUNNING_MODE == 2) {
 		register_system_syntax("define", contparse_define_front);
-		//register_system_syntax("set!", contparse_set_front);
+		register_system_syntax("set!", contparse_set_front);
 		//register_system_syntax("lambda", contparse_lambda_front);
 		//register_system_syntax("display", contparse_display_front);
 		//register_system_syntax("quote", contparse_quote_front);
