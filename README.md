@@ -43,6 +43,7 @@ The json config files would need to be adopted to your compiler location.
 * string= - String based comparsion (string= "abc" "abc") => #t
 * </> <=/>= - lesser / greater equal then
 * and / or / not - logic operators
+* if - conditional function in the form (if cond-expr if-expr else-expr)
 
 ### Implemented list functions:
 * car - Returns head element of a list
@@ -65,8 +66,9 @@ The json config files would need to be adopted to your compiler location.
 * set! - override existing symbols or functions
 * mode - Switches between CP and recursive mode. 1 for recursive, 2 for CP-Style
 
-### Most important Limitations:
-* No garbage collection currently
-* Only supports integers
+### Possible future Improvemenets:
+* Garbage Collection
+* Overflow / Underflow Detection
+* State Serialization
 
 // Stefan Seibert, September 2017
