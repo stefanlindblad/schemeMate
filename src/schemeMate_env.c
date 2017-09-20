@@ -43,7 +43,6 @@ sm_obj grow_env(sm_obj oldEnv)
     newSize = oldSize * 2 + 1;
     newEnv = allocate_env(newSize, oldEnv->sm_env.parent);
 
-    // TODO check if it isnt enough to iterate used_slots
     for (int i = 0; i < oldSize; i++) {
 		sm_obj oldKey = oldEnv->sm_env.entries[i].key;
 
