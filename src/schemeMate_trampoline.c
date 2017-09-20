@@ -376,17 +376,14 @@ void_ptr_ptr_func contparse_if_back()
 	if (result == sm_true() || (is_int(result) && int_val(result) > 0)) {
 		sm_obj true_branch = sm_eval(true_cond, MAIN_ENV);
 		PUSH_M(true_branch);
-		//SAVE_CP(contparse_repl_front);
 		return LOAD_CP();
 	}
 
 	else if(false_cond != sm_nil()) {
 		sm_obj false_branch = sm_eval(false_cond, MAIN_ENV);
 		PUSH_M(false_branch);
-		//SAVE_CP(contparse_repl_front);
 		return LOAD_CP();
 	}
 	PUSH_M(sm_void());
-	//SAVE_CP(contparse_repl_front);
 	return LOAD_CP();
 }
