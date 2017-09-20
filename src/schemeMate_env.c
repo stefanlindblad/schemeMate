@@ -7,6 +7,12 @@ void init_environment(int RUNNING_MODE)
 	MAIN_ENV = allocate_env(ENV_INIT_SIZE, NULL);
 }
 
+void shutdown_environment()
+{
+	free(MAIN_ENV);
+	MAIN_ENV = NULL;
+}
+
 sm_obj allocate_env(unsigned env_size, sm_obj parent)
 {
 	unsigned bytes;

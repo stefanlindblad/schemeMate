@@ -26,7 +26,8 @@ static inline void_ptr_ptr_func LOAD_CP()
     return *--continuation_stack_pointer;
 }
 
-void init_trampoline();
+void init_trampoline(int running_mode);
+void shutdown_trampoline();
 void execute_trampoline(void_ptr_ptr_func function);
 void grow_cp_stack();
 void_ptr_ptr_func contparse_initial_eval();
@@ -41,5 +42,6 @@ void_ptr_ptr_func contparse_define_front();
 void_ptr_ptr_func contparse_define_back();
 void_ptr_ptr_func contparse_set_front();
 void_ptr_ptr_func contparse_set_back();
+void_ptr_ptr_func contparse_lambda();
 
 #endif // TRAMPOLINE_HEADER

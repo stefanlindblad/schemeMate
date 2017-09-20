@@ -61,6 +61,7 @@ The json config files would need to be adopted to your compiler location.
 * exit - exits the program with the given error code
 * define - define new symbols or functions
 * set! - override existing symbols or functions
+* mode - Switches between CP and recursive mode. 1 for recursive, 2 for CP-Style
 
 ### Most important Limitations:
 * No garbage collection currently

@@ -1,22 +1,23 @@
 #include "schemeMate_functions.h"
 
-void init_functions(int RUNNING_MODE)
+void init_functions(int running_mode)
 {
 	// Register Basic Syntax
-	if (RUNNING_MODE == 1) {
+	if (running_mode == 1) {
 		register_system_syntax("define", internal_define);
 		register_system_syntax("set!", internal_set);
 		register_system_syntax("lambda", internal_lambda);
 		register_system_syntax("display", internal_display);
 		register_system_syntax("quote", internal_quote);
 	}
-	else if (RUNNING_MODE == 2) {
+	else if (running_mode == 2) {
 		register_system_syntax("define", contparse_define_front);
 		register_system_syntax("set!", contparse_set_front);
-		//register_system_syntax("lambda", contparse_lambda_front);
+		register_system_syntax("lambda", contparse_lambda);
 		//register_system_syntax("display", contparse_display_front);
 		//register_system_syntax("quote", contparse_quote_front);
 	}
+	register_system_syntax("mode", internal_mode);
 
 	// Register Math Functions
 	register_system_function("+", internal_plus);
@@ -78,6 +79,22 @@ static void assign_symbol(sm_obj args, sm_obj env)
 			return;
 		}
 	}
+}
+
+static void internal_mode(sm_obj args, sm_obj env)
+{
+	sm_obj mode_obj = car(args);
+	sm_obj end = cdr(args);
+
+	if (end != sm_nil())
+		ERROR_CODE("mode function expects exactly 1 argument.", 45);
+
+	int mode = int_val(mode_obj);
+	if (mode == 1)
+		PRINT_LINE("Restarting Interpreter in Recursive Edition");
+	else if (mode == 2)
+		PRINT_LINE("Restarting Interpreter in Continuation Parsing Edition");
+	restart_all_systems(mode);
 }
 
 static void internal_define(sm_obj args, sm_obj env)

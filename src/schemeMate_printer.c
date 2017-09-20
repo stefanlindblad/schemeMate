@@ -108,5 +108,5 @@ void error(char *message, char *file, int line, int exit_code)
 {
     printf("%s:%d: %s\n", file, line, message);
 	printf("schemeMate exited with error code %d, press ENTER to continue.\n", exit_code);
-	exit(exit_code);
+	restart_all_systems(666);
 }

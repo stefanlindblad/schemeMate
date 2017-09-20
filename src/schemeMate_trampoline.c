@@ -1,10 +1,18 @@
 #include "schemeMate_trampoline.h"
 
-void init_trampoline()
+void init_trampoline(int running_mode)
 {
 	continuation_stack = (void_ptr_ptr_func*) malloc(sizeof(void_ptr_ptr_func) * INIT_CONT_STACK_SIZE);
 	continuation_stack_pointer = continuation_stack;
 	continuation_stack_top = &(continuation_stack[INIT_CONT_STACK_SIZE]);
+}
+
+void shutdown_trampoline()
+{
+	free(continuation_stack);
+	continuation_stack = NULL;
+	continuation_stack_pointer = NULL;
+	continuation_stack_top = NULL;
 }
 
 void execute_trampoline(void_ptr_ptr_func function)
@@ -300,5 +308,21 @@ void_ptr_ptr_func contparse_set_back()
 
 	assign_symbol(args, env);
 	PUSH_M(sm_void());
+	return LOAD_CP();
+}
+
+void_ptr_ptr_func contparse_lambda(sm_obj args, sm_obj env)
+{
+	if (!is_cons(args))
+	ERROR_CODE("lambda function expects at least 2 arguments.", 45);
+
+	sm_obj lambda_args = car(args);
+	sm_obj body_args = cdr(args);
+
+	if(!is_cons(body_args))
+		ERROR_CODE("lambda function expects two list objects (cons) as parameters.", 45);
+
+	sm_obj lambda_func = new_user_func(lambda_args, body_args);
+	PUSH_M(lambda_func);
 	return LOAD_CP();
 }

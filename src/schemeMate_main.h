@@ -15,11 +15,13 @@ static enum INTERPRETER_MODE {
     MAX_MODE = 4
 };
 
-static void init_system(int RUNNING_MODE);
+static void init_system(int running_mode);
 static void recursive_repl();
 static void_ptr_ptr_func contparse_repl_front();
 static void_ptr_ptr_func contparse_repl_back();
-void restart();
+void init_all_systems(int running_mode);
+void restart_all_systems();
+void shutdown_all_systems();
 int main(int argc, char *argv[]);
 
 #endif // MAIN_HEADER

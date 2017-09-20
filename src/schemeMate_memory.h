@@ -35,7 +35,8 @@ static sm_obj *symbolTable = NULL;
 static int numKnownSymbols = 0;
 static int symbolTableSize = 0;
 
-void init_memory();
+void init_memory(int running_mode);
+void shutdown_memory();
 sm_obj new_int(int value);
 sm_obj new_symbol(char* chars);
 sm_obj new_string(char* chars);

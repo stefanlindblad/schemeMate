@@ -2,9 +2,15 @@
 
 sm_stack MAIN_STACK = NULL;
 
-void init_evaluation(int RUNNING_MODE)
+void init_evaluation(int running_mode)
 {
 	MAIN_STACK = allocate_stack();
+}
+
+void shutdown_evaluation()
+{
+	free(MAIN_STACK);
+	MAIN_STACK = NULL;
 }
 
 sm_stack allocate_stack()

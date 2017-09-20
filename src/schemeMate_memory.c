@@ -1,11 +1,19 @@
 #include "schemeMate_memory.h"
 
-void init_memory()
+void init_memory(int running_mode)
 {
 	symbolTable = (sm_obj*) malloc(sizeof(sm_obj) * INITIAL_SYMBOLTABLE_SIZE);
 	symbolTableSize = INITIAL_SYMBOLTABLE_SIZE;
 	numKnownSymbols = 0;
     memset(symbolTable, 0, (sizeof(sm_obj) * INITIAL_SYMBOLTABLE_SIZE));
+}
+
+void shutdown_memory()
+{
+	free(symbolTable);
+	symbolTable = NULL;
+	symbolTableSize = INITIAL_SYMBOLTABLE_SIZE;
+	numKnownSymbols = 0;
 }
 
 // utility functions to create the object types

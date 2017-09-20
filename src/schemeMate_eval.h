@@ -60,7 +60,7 @@ static inline void DROP(int amount, sm_stack s)
 		ERROR_CODE("Evaluation Stack Underflow!", 48);
 }
 
-void init_evaluation(int RUNNING_MODE);
+void init_evaluation(int running_mode);
 sm_stack allocate_stack();
 void sm_eval_intern(sm_obj o, sm_obj env);
 sm_obj sm_eval(sm_obj o, sm_obj env);
